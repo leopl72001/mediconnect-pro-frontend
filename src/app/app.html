@@ -1,342 +1,488 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<style>
-  :host {
-    --bright-blue: oklch(51.01% 0.274 263.83);
-    --electric-violet: oklch(53.18% 0.28 296.97);
-    --french-violet: oklch(47.66% 0.246 305.88);
-    --vivid-pink: oklch(69.02% 0.277 332.77);
-    --hot-red: oklch(61.42% 0.238 15.34);
-    --orange-red: oklch(63.32% 0.24 31.68);
-
-    --gray-900: oklch(19.37% 0.006 300.98);
-    --gray-700: oklch(36.98% 0.014 302.71);
-    --gray-400: oklch(70.9% 0.015 304.04);
-
-    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
-      180deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
-      90deg,
-      var(--orange-red) 0%,
-      var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
-
-    --pill-accent: var(--bright-blue);
-
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-    box-sizing: border-box;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+<div class="min-h-screen bg-[#f5f8fb] text-slate-800">
+  @if (mobileMenuOpen()) {
+    <button type="button" aria-label="Cerrar menú" class="fixed inset-0 z-40 bg-slate-950/45 lg:hidden" (click)="mobileMenuOpen.set(false)"></button>
   }
 
-  h1 {
-    font-size: 3.125rem;
-    color: var(--gray-900);
-    font-weight: 500;
-    line-height: 100%;
-    letter-spacing: -0.125rem;
-    margin: 0;
-    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-      "Segoe UI Symbol";
-  }
-
-  p {
-    margin: 0;
-    color: var(--gray-700);
-  }
-
-  main {
-    width: 100%;
-    min-height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    box-sizing: inherit;
-    position: relative;
-  }
-
-  .angular-logo {
-    max-width: 9.2rem;
-  }
-
-  .content {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 700px;
-    margin-bottom: 3rem;
-  }
-
-  .content h1 {
-    margin-top: 1.75rem;
-  }
-
-  .content p {
-    margin-top: 1.5rem;
-  }
-
-  .divider {
-    width: 1px;
-    background: var(--red-to-pink-to-purple-vertical-gradient);
-    margin-inline: 0.5rem;
-  }
-
-  .pill-group {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    flex-wrap: wrap;
-    gap: 1.25rem;
-  }
-
-  .pill {
-    display: flex;
-    align-items: center;
-    --pill-accent: var(--bright-blue);
-    background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
-    color: var(--pill-accent);
-    padding-inline: 0.75rem;
-    padding-block: 0.375rem;
-    border-radius: 2.75rem;
-    border: 0;
-    transition: background 0.3s ease;
-    font-family: var(--inter-font);
-    font-size: 0.875rem;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 1.4rem;
-    letter-spacing: -0.00875rem;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .pill:hover {
-    background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
-  }
-
-  .pill-group .pill:nth-child(6n + 1) {
-    --pill-accent: var(--bright-blue);
-  }
-  .pill-group .pill:nth-child(6n + 2) {
-    --pill-accent: var(--electric-violet);
-  }
-  .pill-group .pill:nth-child(6n + 3) {
-    --pill-accent: var(--french-violet);
-  }
-
-  .pill-group .pill:nth-child(6n + 4),
-  .pill-group .pill:nth-child(6n + 5),
-  .pill-group .pill:nth-child(6n + 6) {
-    --pill-accent: var(--hot-red);
-  }
-
-  .pill-group svg {
-    margin-inline-start: 0.25rem;
-  }
-
-  .social-links {
-    display: flex;
-    align-items: center;
-    gap: 0.73rem;
-    margin-top: 1.5rem;
-  }
-
-  .social-links path {
-    transition: fill 0.3s ease;
-    fill: var(--gray-400);
-  }
-
-  .social-links a:hover svg path {
-    fill: var(--gray-900);
-  }
-
-  @media screen and (max-width: 650px) {
-    .content {
-      flex-direction: column;
-      width: max-content;
-    }
-
-    .divider {
-      height: 1px;
-      width: 100%;
-      background: var(--red-to-pink-to-purple-horizontal-gradient);
-      margin-block: 1.5rem;
-    }
-  }
-</style>
-
-<main class="main">
-  <div class="content">
-    <div class="left-side">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 982 239"
-        fill="none"
-        class="angular-logo"
-      >
-        <g clip-path="url(#a)">
-          <path
-            fill="url(#b)"
-            d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-          />
-          <path
-            fill="url(#c)"
-            d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
-          />
-        </g>
-        <defs>
-          <radialGradient
-            id="c"
-            cx="0"
-            cy="0"
-            r="1"
-            gradientTransform="rotate(118.122 171.182 60.81) scale(205.794)"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stop-color="#FF41F8" />
-            <stop offset=".707" stop-color="#FF41F8" stop-opacity=".5" />
-            <stop offset="1" stop-color="#FF41F8" stop-opacity="0" />
-          </radialGradient>
-          <linearGradient
-            id="b"
-            x1="0"
-            x2="982"
-            y1="192"
-            y2="192"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stop-color="#F0060B" />
-            <stop offset="0" stop-color="#F0070C" />
-            <stop offset=".526" stop-color="#CC26D5" />
-            <stop offset="1" stop-color="#7702FF" />
-          </linearGradient>
-          <clipPath id="a"><path fill="#fff" d="M0 0h982v239H0z" /></clipPath>
-        </defs>
-      </svg>
-      <h1>Hello, {{ title() }}</h1>
-      <p>Congratulations! Your app is running. 🎉</p>
-    </div>
-    <div class="divider" role="separator" aria-label="Divider"></div>
-    <div class="right-side">
-      <div class="pill-group">
-        @for (item of [
-          { title: 'Explore the Docs', link: 'https://angular.dev' },
-          { title: 'Learn with Tutorials', link: 'https://angular.dev/tutorials' },
-          { title: 'Prompt and best practices for AI', link: 'https://angular.dev/ai/develop-with-ai'},
-          { title: 'CLI Docs', link: 'https://angular.dev/tools/cli' },
-          { title: 'Angular Language Service', link: 'https://angular.dev/tools/language-service' },
-          { title: 'Angular DevTools', link: 'https://angular.dev/tools/devtools' },
-        ]; track item.title) {
-          <a
-            class="pill"
-            [href]="item.link"
-            target="_blank"
-            rel="noopener"
-          >
-            <span>{{ item.title }}</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="14"
-              viewBox="0 -960 960 960"
-              width="14"
-              fill="currentColor"
-            >
-              <path
-                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"
-              />
+  <div class="mx-auto flex min-h-screen max-w-[1720px]">
+    <aside
+      class="fixed inset-y-0 left-0 z-50 flex w-[260px] shrink-0 -translate-x-full flex-col border-r border-[#e6edf1] bg-white px-5 pb-6 pt-7 transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0"
+      [class.translate-x-0]="mobileMenuOpen()"
+      aria-label="Navegación principal">
+      <div class="mb-11 flex items-center justify-between px-2">
+        <button type="button" (click)="goTo('resumen')" class="flex items-center gap-2.5 text-left" aria-label="Ir al inicio">
+          <span class="flex h-11 w-11 items-center justify-center rounded-[15px] bg-[#087b70] text-white shadow-[0_8px_22px_rgba(7,122,110,.18)]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8c4.2 7.3 7.4 10 8.9 11 1.5-1 4.7-3.7 8.8-8.5a5.5 5.5 0 0 0 0-7.9Z"/>
+              <path d="M3.5 12h4l2-3.5 3 7 2-3.5h6"/>
             </svg>
-          </a>
+          </span>
+          <span>
+            <span class="block font-[Manrope] text-[18px] font-extrabold tracking-[-.7px] text-[#14283b]">MediConnect<span class="text-[#07887b]">.</span></span>
+            <span class="block text-[10px] font-extrabold uppercase tracking-[2.9px] text-[#8a9aa7]">Pro Health</span>
+          </span>
+        </button>
+        <button type="button" (click)="mobileMenuOpen.set(false)" aria-label="Cerrar navegación" class="rounded-lg p-2 text-slate-500 lg:hidden">✕</button>
+      </div>
+
+      <p class="mb-3 px-4 text-[10px] font-bold uppercase tracking-[2.3px] text-slate-400">Espacio de trabajo</p>
+      <nav class="flex flex-col gap-1.5" aria-label="Secciones">
+        @for (item of menu(); track item.id) {
+          <button type="button" (click)="goTo(item.id)"
+            class="group flex min-h-11 items-center gap-3 rounded-xl px-4 text-left text-[13px] font-semibold transition-colors hover:bg-[#f2f7f7] hover:text-[#087d71]"
+            [class.bg-[#e7f6f2]]="section() === item.id"
+            [class.text-[#087d71]]="section() === item.id"
+            [class.text-slate-500]="section() !== item.id"
+            [attr.aria-current]="section() === item.id ? 'page' : null">
+            <span class="flex h-5 w-5 items-center justify-center text-[19px] font-medium" aria-hidden="true">{{ item.icon }}</span>
+            {{ item.label }}
+            @if (section() === item.id) {
+              <span class="ml-auto h-1.5 w-1.5 rounded-full bg-[#0a8b7b]"></span>
+            }
+          </button>
         }
+      </nav>
+
+      <div class="mt-auto">
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#dff5ef] to-[#eaf7f9] p-4">
+          <div class="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/85 text-[#0e8d80] shadow-sm">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 18h6m-5 4h4M9 14a6 6 0 1 1 6 0c-1.2.8-1.5 1.7-1.5 3h-3c0-1.3-.3-2.2-1.5-3Z"/>
+            </svg>
+          </div>
+          <p class="mb-1 text-sm font-extrabold text-[#135b56]">MediConnect Pro</p>
+          <p class="text-xs leading-5 text-[#488078]">Estamos diseñando una experiencia de salud más cercana.</p>
+          <span class="mt-3 inline-flex items-center rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-bold text-[#087b70]">Vista de demostración</span>
+        </div>
+        <div class="mt-5 flex items-center gap-3 border-t border-slate-100 px-2 pt-5">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[#e2f2ed] text-sm font-extrabold text-[#076f66]">
+            {{ role() === 'paciente' ? 'CP' : role() === 'medico' ? 'LG' : 'AD' }}
+          </span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-xs font-extrabold">{{ role() === 'paciente' ? 'Carlos Pérez' : role() === 'medico' ? 'Dra. Laura Gómez' : 'Administrador' }}</p>
+            <p class="text-[11px] text-slate-400">{{ roleLabel() }} · Demo</p>
+          </div>
+          <span class="text-slate-400" aria-hidden="true">•••</span>
+        </div>
       </div>
-      <div class="social-links">
-        <a
-          href="https://github.com/angular/angular"
-          aria-label="Github"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg
-            width="25"
-            height="24"
-            viewBox="0 0 25 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            alt="Github"
-          >
-            <path
-              d="M12.3047 0C5.50634 0 0 5.50942 0 12.3047C0 17.7423 3.52529 22.3535 8.41332 23.9787C9.02856 24.0946 9.25414 23.7142 9.25414 23.3871C9.25414 23.0949 9.24389 22.3207 9.23876 21.2953C5.81601 22.0377 5.09414 19.6444 5.09414 19.6444C4.53427 18.2243 3.72524 17.8449 3.72524 17.8449C2.61064 17.082 3.81137 17.0973 3.81137 17.0973C5.04697 17.1835 5.69604 18.3647 5.69604 18.3647C6.79321 20.2463 8.57636 19.7029 9.27978 19.3881C9.39052 18.5924 9.70736 18.0499 10.0591 17.7423C7.32641 17.4347 4.45429 16.3765 4.45429 11.6618C4.45429 10.3185 4.9311 9.22133 5.72065 8.36C5.58222 8.04931 5.16694 6.79833 5.82831 5.10337C5.82831 5.10337 6.85883 4.77319 9.2121 6.36459C10.1965 6.09082 11.2424 5.95546 12.2883 5.94931C13.3342 5.95546 14.3801 6.09082 15.3644 6.36459C17.7023 4.77319 18.7328 5.10337 18.7328 5.10337C19.3942 6.79833 18.9789 8.04931 18.8559 8.36C19.6403 9.22133 20.1171 10.3185 20.1171 11.6618C20.1171 16.3888 17.2409 17.4296 14.5031 17.7321C14.9338 18.1012 15.3337 18.8559 15.3337 20.0084C15.3337 21.6552 15.3183 22.978 15.3183 23.3779C15.3183 23.7009 15.5336 24.0854 16.1642 23.9623C21.0871 22.3484 24.6094 17.7341 24.6094 12.3047C24.6094 5.50942 19.0999 0 12.3047 0Z"
-            />
-          </svg>
-        </a>
-        <a
-          href="https://x.com/angular"
-          aria-label="X"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            alt="X"
-          >
-            <path
-              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-            />
-          </svg>
-        </a>
-        <a
-          href="https://www.youtube.com/channel/UCbn1OgGei-DV7aSRo_HaAiw"
-          aria-label="Youtube"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg
-            width="29"
-            height="20"
-            viewBox="0 0 29 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            alt="Youtube"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
-              d="M27.4896 1.52422C27.9301 1.96749 28.2463 2.51866 28.4068 3.12258C29.0004 5.35161 29.0004 10 29.0004 10C29.0004 10 29.0004 14.6484 28.4068 16.8774C28.2463 17.4813 27.9301 18.0325 27.4896 18.4758C27.0492 18.9191 26.5 19.2389 25.8972 19.4032C23.6778 20 14.8068 20 14.8068 20C14.8068 20 5.93586 20 3.71651 19.4032C3.11363 19.2389 2.56449 18.9191 2.12405 18.4758C1.68361 18.0325 1.36732 17.4813 1.20683 16.8774C0.613281 14.6484 0.613281 10 0.613281 10C0.613281 10 0.613281 5.35161 1.20683 3.12258C1.36732 2.51866 1.68361 1.96749 2.12405 1.52422C2.56449 1.08095 3.11363 0.76113 3.71651 0.596774C5.93586 0 14.8068 0 14.8068 0C14.8068 0 23.6778 0 25.8972 0.596774C26.5 0.76113 27.0492 1.08095 27.4896 1.52422ZM19.3229 10L11.9036 5.77905V14.221L19.3229 10Z"
-            />
-          </svg>
-        </a>
+    </aside>
+
+    <main class="min-w-0 flex-1">
+      <header class="sticky top-0 z-30 flex min-h-[82px] items-center justify-between gap-4 border-b border-[#e8eef1] bg-white/95 px-5 backdrop-blur-xl md:px-9 xl:px-12">
+        <div class="flex min-w-0 items-center gap-3">
+          <button type="button" (click)="mobileMenuOpen.set(true)" aria-label="Abrir navegación" class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-600 lg:hidden">☰</button>
+          <div>
+            <p class="mb-0.5 text-[11px] font-medium text-slate-400">Portal MediConnect <span class="mx-1 text-slate-300">/</span> {{ roleLabel() }}</p>
+            <h1 class="truncate text-[18px] font-extrabold tracking-[-.5px] text-[#14283b]">{{ getPageTitle() }}</h1>
+          </div>
+        </div>
+        <div class="flex items-center gap-2.5 md:gap-4">
+          <span class="hidden items-center gap-1.5 rounded-full bg-[#edf9f5] px-3 py-1.5 text-[11px] font-bold text-[#138975] sm:inline-flex">
+            <span class="h-1.5 w-1.5 rounded-full bg-[#14a988]"></span> Entorno de demostración
+          </span>
+          <label class="sr-only" for="demo-role">Seleccionar rol de demostración</label>
+          <select id="demo-role" [value]="role()" (change)="setRole($any($event.target).value)"
+            class="max-w-[118px] rounded-xl border border-[#e1e9ed] bg-white px-2.5 py-2.5 text-xs font-bold text-slate-700 outline-none transition focus:border-[#0b9485] focus:ring-2 focus:ring-teal-100 md:max-w-none md:px-4">
+            <option value="paciente">Paciente</option>
+            <option value="medico">Médico</option>
+            <option value="admin">Administrador</option>
+          </select>
+          <div class="hidden h-10 w-10 items-center justify-center rounded-full bg-[#edf5f2] text-sm font-extrabold text-[#0a7f70] sm:flex" aria-label="Avatar de usuario">
+            {{ role() === 'paciente' ? 'CP' : role() === 'medico' ? 'LG' : 'AD' }}
+          </div>
+        </div>
+      </header>
+
+      <div class="mx-auto w-full max-w-[1440px] px-5 pb-14 pt-7 md:px-9 md:pt-9 xl:px-12">
+        <div class="mb-7 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500">
+          <span class="inline-flex items-center gap-2 rounded-full border border-[#dcece6] bg-white px-3 py-1.5 text-[#168373]">
+            <span class="h-1.5 w-1.5 rounded-full bg-[#13a68c]"></span>
+            Fase 5 · Diseño de interfaz
+          </span>
+          <span>Datos ficticios. Aún no hay conexión con la API ni autenticación real.</span>
+        </div>
+
+        @if (notice()) {
+          <div role="status" class="mb-6 flex items-start justify-between gap-3 rounded-xl border border-[#b5e4d6] bg-[#eaf8f2] px-4 py-3 text-sm text-[#126e62]">
+            <span>{{ notice() }}</span>
+            <button type="button" aria-label="Cerrar mensaje" (click)="notice.set('')" class="text-lg leading-none">×</button>
+          </div>
+        }
+
+        @if (section() === 'resumen' && role() === 'paciente') {
+          <section class="page-enter">
+            <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p class="mb-1 text-xs font-bold capitalize tracking-wide text-[#0c9683]">{{ today }}</p>
+                <h2 class="text-[25px] font-extrabold tracking-[-1.2px] text-[#12283e] md:text-[31px]">¡Hola, Carlos! <span aria-hidden="true">👋</span></h2>
+                <p class="mt-1 text-[13px] text-[#7b8b9b]">Nos alegra verte de nuevo. Aquí tienes un resumen de tu salud.</p>
+              </div>
+              <button type="button" (click)="openBooking()" class="inline-flex h-11 items-center gap-2 rounded-xl bg-[#087d71] px-5 text-xs font-bold text-white shadow-[0_6px_18px_rgba(8,125,113,.2)] transition hover:bg-[#086b62]">
+                <span class="text-lg font-normal" aria-hidden="true">＋</span> Agendar cita
+              </button>
+            </div>
+
+            <div class="relative mb-7 overflow-hidden rounded-[22px] bg-gradient-to-r from-[#087a70] via-[#097b7c] to-[#123f61] p-6 text-white shadow-[0_14px_30px_rgba(14,80,84,.13)] md:p-9">
+              <div class="soft-dot-grid absolute inset-0 opacity-40"></div>
+              <div class="pointer-events-none absolute -right-12 -top-24 h-[340px] w-[340px] rounded-full border-[44px] border-white/[.06]"></div>
+              <div class="pointer-events-none absolute right-36 -bottom-36 h-[280px] w-[280px] rounded-full bg-white/[.04]"></div>
+              <div class="relative grid items-center gap-6 md:grid-cols-[1fr_auto]">
+                <div class="max-w-xl">
+                  <span class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-[11px] font-bold">
+                    <span aria-hidden="true">✦</span> Tu bienestar es nuestra prioridad
+                  </span>
+                  <h3 class="max-w-[470px] font-[Manrope] text-[28px] font-extrabold leading-[1.2] tracking-[-1px] sm:text-[36px]">
+                    Tu salud, <span class="text-[#9ff1d7]">en buenas manos.</span>
+                  </h3>
+                  <p class="mt-3 max-w-[410px] text-[13px] leading-6 text-[#d5eeef]">Encuentra al especialista ideal, agenda en minutos y mantén el cuidado de tu salud en un solo lugar.</p>
+                  <button type="button" (click)="goTo('medicos')" class="mt-6 inline-flex h-10 items-center gap-2 rounded-xl bg-white px-4 text-xs font-extrabold text-[#08786e] shadow-sm transition hover:bg-[#ebfbf5]">
+                    Explorar especialistas <span aria-hidden="true">↗</span>
+                  </button>
+                </div>
+                <div class="relative hidden h-[190px] w-[235px] items-center justify-center lg:flex" aria-hidden="true">
+                  <div class="absolute inset-0 m-auto h-[168px] w-[168px] rounded-full border border-white/20"></div>
+                  <div class="absolute inset-0 m-auto h-[125px] w-[125px] rounded-full border border-white/20 bg-white/10"></div>
+                  <div class="relative flex h-20 w-20 items-center justify-center rounded-[24px] bg-white/95 text-[#0c8d82] shadow-[0_22px_45px_rgba(0,39,42,.2)]">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8c4.2 7.3 7.4 10 8.9 11 1.5-1 4.7-3.7 8.8-8.5a5.5 5.5 0 0 0 0-7.9Z"/>
+                      <path d="M3.5 12h4l2-3.5 3 7 2-3.5h6"/>
+                    </svg>
+                  </div>
+                  <span class="absolute left-0 top-0 rounded-xl bg-white/95 px-3 py-2 text-[10px] font-extrabold text-[#087d70] shadow-lg">♥ Atención cercana</span>
+                  <span class="absolute bottom-2 right-0 rounded-xl bg-white/95 px-3 py-2 text-[10px] font-extrabold text-[#087d70] shadow-lg">✓ Citas sencillas</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-7 grid gap-4 sm:grid-cols-3">
+              <div class="rounded-2xl border border-[#e7edf1] bg-white p-5 shadow-[0_3px_14px_rgba(27,65,91,.025)]">
+                <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#e8f7f2] text-xl text-[#0a897c]">▦</div>
+                <div class="flex items-end gap-2"><span class="text-[27px] font-extrabold tracking-tight">{{ appointmentCount() }}</span><span class="pb-1 text-xs font-medium text-slate-400">programadas</span></div>
+                <p class="mt-1 text-xs font-semibold text-slate-500">Próximas citas</p>
+              </div>
+              <div class="rounded-2xl border border-[#e7edf1] bg-white p-5 shadow-[0_3px_14px_rgba(27,65,91,.025)]">
+                <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#eef2ff] text-xl text-[#6174cb]">✚</div>
+                <div class="flex items-end gap-2"><span class="text-[27px] font-extrabold tracking-tight">02</span><span class="pb-1 text-xs font-medium text-slate-400">documentos</span></div>
+                <p class="mt-1 text-xs font-semibold text-slate-500">Registros clínicos de ejemplo</p>
+              </div>
+              <div class="rounded-2xl border border-[#e7edf1] bg-white p-5 shadow-[0_3px_14px_rgba(27,65,91,.025)]">
+                <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff5e5] text-xl text-[#d99b35]">☆</div>
+                <div class="flex items-end gap-2"><span class="text-[27px] font-extrabold tracking-tight">04</span><span class="pb-1 text-xs font-medium text-slate-400">disponibles</span></div>
+                <p class="mt-1 text-xs font-semibold text-slate-500">Profesionales de ejemplo</p>
+              </div>
+            </div>
+
+            <div class="grid gap-6 xl:grid-cols-[1.55fr_1fr]">
+              <section class="min-w-0 rounded-2xl border border-[#e6edf1] bg-white p-5 shadow-[0_3px_14px_rgba(27,65,91,.02)] md:p-6">
+                <div class="mb-5 flex items-center justify-between gap-2">
+                  <div><h3 class="text-base font-extrabold text-[#132c40]">Especialistas destacados</h3><p class="mt-1 text-xs text-slate-400">Conoce a nuestro equipo de demostración</p></div>
+                  <button type="button" (click)="goTo('medicos')" class="whitespace-nowrap text-xs font-bold text-[#0b917f] hover:underline">Ver todos →</button>
+                </div>
+                <div class="space-y-4">
+                  @for (doctor of doctors.slice(0, 3); track doctor.id) {
+                    <div class="flex flex-wrap items-center gap-3 rounded-xl border border-[#edf1f3] p-3.5 transition hover:border-[#c9e7df] sm:flex-nowrap">
+                      <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-extrabold text-[#284352]" [style.background]="doctor.gradient">{{ doctor.initials }}</span>
+                      <div class="min-w-[140px] flex-1">
+                        <h4 class="truncate text-[13px] font-extrabold text-[#182e3e]">{{ doctor.name }}</h4>
+                        <p class="mt-0.5 text-[11px] text-slate-400">{{ doctor.specialty }}</p>
+                        <p class="mt-1 text-[10px] text-[#e5a42e]">★ <span class="font-bold text-slate-500">{{ doctor.rating }}</span> <span class="text-slate-300">· {{ doctor.experience }}</span></p>
+                      </div>
+                      <button type="button" (click)="openBooking(doctor.id)" class="ml-auto rounded-lg border border-[#bce6db] bg-[#ecfaf5] px-3 py-2 text-[11px] font-bold text-[#087e70] hover:bg-[#dff5ed]">Agendar →</button>
+                    </div>
+                  }
+                </div>
+              </section>
+
+              <section class="rounded-2xl border border-[#e6edf1] bg-white p-5 shadow-[0_3px_14px_rgba(27,65,91,.02)] md:p-6">
+                <div class="mb-5 flex items-center justify-between gap-2">
+                  <div><h3 class="text-base font-extrabold text-[#132c40]">Próxima cita</h3><p class="mt-1 text-xs text-slate-400">Tu agenda de salud</p></div>
+                  <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[#edf7f4] text-lg text-[#0b8d7f]">▦</span>
+                </div>
+                @if (upcomingAppointments().length > 0) {
+                  <div class="rounded-2xl bg-[#f2faf7] p-4">
+                    <div class="mb-3 inline-flex rounded-full bg-[#dff3e9] px-2.5 py-1 text-[10px] font-bold text-[#12866c]">● Confirmada</div>
+                    <p class="font-[Manrope] text-[18px] font-extrabold text-[#184438]">{{ upcomingAppointments()[0].specialty }}</p>
+                    <p class="mt-1 text-xs text-[#75908a]">con {{ upcomingAppointments()[0].doctor }}</p>
+                    <div class="mt-5 flex flex-wrap items-center gap-3 border-t border-[#d7ebe1] pt-4 text-[12px] font-semibold text-[#386b61]">
+                      <span>▦ {{ dateLabel(upcomingAppointments()[0].date) }}</span>
+                      <span>◷ {{ upcomingAppointments()[0].time }}</span>
+                    </div>
+                  </div>
+                } @else {
+                  <p class="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">Aún no tienes citas programadas.</p>
+                }
+                <button type="button" (click)="goTo('citas')" class="mt-5 w-full rounded-xl border border-[#dce8e7] py-2.5 text-xs font-bold text-[#197a6f] transition hover:bg-[#edf9f5]">Ver todas mis citas →</button>
+              </section>
+            </div>
+          </section>
+        } @else if (section() === 'resumen' && role() === 'medico') {
+          <section class="page-enter">
+            <p class="mb-1 text-xs font-bold capitalize text-[#0b9585]">{{ today }}</p>
+            <h2 class="text-[27px] font-extrabold tracking-[-.8px] text-[#13283b]">Buen día, Dra. Laura <span aria-hidden="true">👋</span></h2>
+            <p class="mb-7 mt-1 text-[13px] text-slate-500">Este es tu espacio de trabajo clínico de demostración.</p>
+            <div class="mb-7 rounded-[22px] bg-gradient-to-r from-[#0c7775] to-[#134c72] p-7 text-white md:p-9">
+              <span class="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold">Panel profesional · Demo</span>
+              <h3 class="text-2xl font-extrabold tracking-[-.5px]">Agenda del día</h3>
+              <p class="mt-2 text-[13px] text-[#d2eeee]">Todo listo para cuidar de tus pacientes. Organiza tus consultas desde aquí.</p>
+              <button type="button" (click)="goTo('agenda')" class="mt-5 rounded-xl bg-white px-4 py-2.5 text-xs font-extrabold text-[#087b70]">Revisar agenda →</button>
+            </div>
+            <div class="mb-7 grid gap-4 sm:grid-cols-3">
+              <div class="rounded-2xl border border-[#e4edf1] bg-white p-6"><p class="text-xs text-slate-400">Citas de hoy</p><p class="mt-2 text-3xl font-extrabold">03</p><p class="mt-2 text-[11px] font-semibold text-[#16876c]">Agenda de ejemplo</p></div>
+              <div class="rounded-2xl border border-[#e4edf1] bg-white p-6"><p class="text-xs text-slate-400">Pacientes</p><p class="mt-2 text-3xl font-extrabold">03</p><p class="mt-2 text-[11px] font-semibold text-[#16876c]">En agenda</p></div>
+              <div class="rounded-2xl border border-[#e4edf1] bg-white p-6"><p class="text-xs text-slate-400">Notas de ejemplo</p><p class="mt-2 text-3xl font-extrabold">02</p><p class="mt-2 text-[11px] font-semibold text-[#16876c]">Historial ficticio</p></div>
+            </div>
+            <div class="rounded-2xl border border-[#e4edf1] bg-white p-6">
+              <div class="mb-5 flex items-center justify-between"><h3 class="text-base font-extrabold">Próximos pacientes</h3><button type="button" (click)="goTo('agenda')" class="text-xs font-bold text-[#0b8f80]">Ver agenda →</button></div>
+              @for (patient of patients; track patient.name) {
+                <div class="flex flex-wrap items-center gap-3 border-b border-slate-100 py-4 last:border-b-0">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#eaf3f4] text-xs font-extrabold text-[#187d77]">{{ patient.initials }}</div>
+                  <div class="min-w-[150px] flex-1"><p class="text-[13px] font-bold">{{ patient.name }}</p><p class="text-xs text-slate-400">{{ patient.reason }}</p></div>
+                  <span class="text-xs font-bold text-slate-600">{{ patient.time }}</span>
+                  <span class="rounded-full bg-[#eef8f3] px-3 py-1 text-[10px] font-bold text-[#13896a]">{{ patient.state }}</span>
+                </div>
+              }
+            </div>
+          </section>
+        } @else if (section() === 'resumen' && role() === 'admin') {
+          <section class="page-enter">
+            <p class="mb-1 text-xs font-bold capitalize text-[#0b9585]">{{ today }}</p>
+            <h2 class="text-[27px] font-extrabold tracking-[-.8px] text-[#13283b]">Panel de administración</h2>
+            <p class="mb-7 mt-1 text-[13px] text-slate-500">Control general de la plataforma. Estadísticas ilustrativas.</p>
+            <div class="mb-7 rounded-[22px] bg-gradient-to-r from-[#173e59] to-[#087b73] p-8 text-white">
+              <span class="text-xs font-bold text-[#b6e9dd]">MediConnect Pro · Administración</span>
+              <h3 class="mt-2 text-2xl font-extrabold">Toda tu operación, en un solo lugar.</h3>
+              <p class="mt-2 max-w-xl text-[13px] leading-6 text-[#d3e7ea]">Revisa la disponibilidad de profesionales, los consultorios y los indicadores de la plataforma.</p>
+            </div>
+            <div class="mb-7 grid gap-4 sm:grid-cols-3">
+              <div class="rounded-2xl border border-[#e4edf1] bg-white p-6"><span class="text-xs text-slate-400">Profesionales</span><p class="mt-2 text-3xl font-extrabold">04</p><p class="mt-2 text-[11px] text-[#16876c]">Perfiles ficticios</p></div>
+              <div class="rounded-2xl border border-[#e4edf1] bg-white p-6"><span class="text-xs text-slate-400">Consultorios</span><p class="mt-2 text-3xl font-extrabold">03</p><p class="mt-2 text-[11px] text-[#16876c]">Unidades simuladas</p></div>
+              <div class="rounded-2xl border border-[#e4edf1] bg-white p-6"><span class="text-xs text-slate-400">Citas registradas</span><p class="mt-2 text-3xl font-extrabold">{{ appointments().length }}</p><p class="mt-2 text-[11px] text-[#16876c]">Solo en esta sesión</p></div>
+            </div>
+            <div class="grid gap-4 md:grid-cols-2">
+              <button type="button" (click)="goTo('profesionales')" class="flex items-center justify-between rounded-2xl border border-[#e4edf1] bg-white p-6 text-left transition hover:border-[#a9d9d0]"><span><strong class="block text-sm">Gestionar profesionales</strong><small class="mt-1 block text-xs text-slate-400">Revisa médicos y especialidades</small></span><span class="text-xl text-[#078475]">↗</span></button>
+              <button type="button" (click)="goTo('consultorios')" class="flex items-center justify-between rounded-2xl border border-[#e4edf1] bg-white p-6 text-left transition hover:border-[#a9d9d0]"><span><strong class="block text-sm">Gestionar consultorios</strong><small class="mt-1 block text-xs text-slate-400">Espacios de atención disponibles</small></span><span class="text-xl text-[#078475]">↗</span></button>
+            </div>
+          </section>
+        } @else if (section() === 'medicos' || section() === 'profesionales') {
+          <section class="page-enter">
+            <div class="mb-6">
+              <p class="mb-1 text-xs font-bold uppercase tracking-wide text-[#0b9585]">Nuestro equipo médico</p>
+              <h2 class="text-[26px] font-extrabold tracking-[-.8px] text-[#13283b]">{{ role() === 'admin' ? 'Directorio de profesionales' : 'Encuentra al especialista ideal' }}</h2>
+              <p class="mt-1 text-[13px] text-slate-500">Perfiles ilustrativos para explorar el diseño de la plataforma.</p>
+            </div>
+            <div class="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-[#e4edf1] bg-white p-4">
+              <div class="flex min-w-[210px] flex-1 items-center gap-3 rounded-xl bg-[#f5f8fa] px-4 py-3">
+                <span class="text-slate-400" aria-hidden="true">⌕</span>
+                <label class="sr-only" for="doctor-search">Buscar especialistas</label>
+                <input id="doctor-search" type="search" placeholder="Buscar médico o especialidad..."
+                  [value]="search()" (input)="search.set($any($event.target).value)"
+                  class="w-full min-w-0 bg-transparent text-[13px] outline-none placeholder:text-slate-400"/>
+              </div>
+              <span class="whitespace-nowrap text-xs font-semibold text-slate-400">{{ filteredDoctors().length }} profesionales</span>
+            </div>
+            <div class="mb-6 flex flex-wrap gap-2">
+              @for (item of specialties; track item) {
+                <button type="button" (click)="specialty.set(item)"
+                  class="rounded-full border px-4 py-2 text-[11px] font-bold transition hover:border-[#087e70]"
+                  [class.border-[#087e70]]="specialty() === item"
+                  [class.bg-[#e4f6ef]]="specialty() === item"
+                  [class.text-[#087e70]]="specialty() === item"
+                  [class.border-[#e3eaed]]="specialty() !== item"
+                  [class.bg-white]="specialty() !== item">{{ item }}</button>
+              }
+            </div>
+            <div class="grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
+              @for (doctor of filteredDoctors(); track doctor.id) {
+                <article class="rounded-[20px] border border-[#e4edf1] bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-[0_14px_25px_rgba(20,64,77,.07)]">
+                  <div class="mb-5 flex items-start justify-between">
+                    <span class="flex h-[70px] w-[70px] items-center justify-center rounded-[18px] text-lg font-extrabold text-[#334c5c]" [style.background]="doctor.gradient">{{ doctor.initials }}</span>
+                    <span class="rounded-full bg-[#ecf8ef] px-3 py-1 text-[10px] font-bold text-[#138a67]">● Disponible</span>
+                  </div>
+                  <h3 class="text-base font-extrabold text-[#152b3e]">{{ doctor.name }}</h3>
+                  <p class="mt-1 text-xs font-semibold text-[#098879]">{{ doctor.specialty }}</p>
+                  <p class="mt-2 text-xs text-slate-400">{{ doctor.experience }}</p>
+                  <div class="mt-5 flex items-center justify-between border-t border-slate-100 pt-4">
+                    <span class="text-xs font-bold text-[#e6a336]">★ {{ doctor.rating }} <span class="font-normal text-slate-400">/ 5</span></span>
+                    <span class="text-[11px] font-semibold text-slate-500">{{ doctor.next }}</span>
+                  </div>
+                  @if (role() === 'paciente') {
+                    <button type="button" (click)="openBooking(doctor.id)" class="mt-5 w-full rounded-xl bg-[#0b8275] py-3 text-xs font-bold text-white hover:bg-[#076c62]">Agendar una cita →</button>
+                  } @else {
+                    <p class="mt-5 rounded-xl bg-[#f0f7f5] p-3 text-center text-xs font-bold text-[#0b8275]">Perfil de demostración</p>
+                  }
+                </article>
+              } @empty {
+                <p class="col-span-full rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500">No encontramos especialistas con ese filtro.</p>
+              }
+            </div>
+          </section>
+        } @else if (section() === 'reservar') {
+          <section class="page-enter max-w-4xl">
+            <button type="button" (click)="goTo('medicos')" class="mb-5 text-xs font-bold text-[#0b8c7d]">← Volver a especialistas</button>
+            <h2 class="text-[26px] font-extrabold tracking-[-.8px] text-[#13283b]">Reserva tu próxima cita</h2>
+            <p class="mb-7 mt-1 text-[13px] text-slate-500">Elige el profesional y horario que mejor se adapten a ti.</p>
+            <div class="grid gap-6 md:grid-cols-[1.3fr_1fr]">
+              <div class="rounded-[20px] border border-[#e3ebef] bg-white p-6">
+                <label class="mb-2 block text-xs font-bold text-slate-700" for="booking-doctor">Especialista</label>
+                <select id="booking-doctor" [ngModel]="bookingDoctorId()" (ngModelChange)="bookingDoctorId.set($event)"
+                  class="mb-6 w-full rounded-xl border border-[#dce7e9] bg-white px-4 py-3 text-sm outline-none focus:border-[#0b8275]">
+                  @for (doctor of doctors; track doctor.id) {
+                    <option [value]="doctor.id">{{ doctor.name }} · {{ doctor.specialty }}</option>
+                  }
+                </select>
+                <label class="mb-2 block text-xs font-bold text-slate-700" for="booking-date">Fecha de la consulta</label>
+                <input id="booking-date" type="date" [min]="minDate" [value]="bookingDate()" (change)="bookingDate.set($any($event.target).value)"
+                  class="mb-6 w-full rounded-xl border border-[#dce7e9] bg-white px-4 py-3 text-sm outline-none focus:border-[#0b8275]"/>
+                <p class="mb-3 text-xs font-bold text-slate-700">Selecciona una hora</p>
+                <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                  @for (time of timeSlots; track time) {
+                    <button type="button" (click)="bookingTime.set(time)"
+                      class="rounded-xl border px-2 py-3 text-xs font-bold transition"
+                      [class.border-[#098879]]="bookingTime() === time"
+                      [class.bg-[#e6f8f0]]="bookingTime() === time"
+                      [class.text-[#08786e]]="bookingTime() === time"
+                      [class.border-[#e2e9ed]]="bookingTime() !== time">{{ time }}</button>
+                  }
+                </div>
+              </div>
+              <aside class="self-start rounded-[20px] border border-[#e3ebef] bg-white p-6">
+                <p class="mb-5 text-sm font-extrabold">Resumen de tu reserva</p>
+                <div class="mb-5 flex items-center gap-3">
+                  <span class="flex h-12 w-12 items-center justify-center rounded-xl font-extrabold" [style.background]="selectedDoctor().gradient">{{ selectedDoctor().initials }}</span>
+                  <div><p class="text-xs font-extrabold">{{ selectedDoctor().name }}</p><p class="mt-1 text-[11px] text-slate-400">{{ selectedDoctor().specialty }}</p></div>
+                </div>
+                <div class="space-y-3 border-t border-b border-slate-100 py-5 text-xs">
+                  <div class="flex justify-between"><span class="text-slate-400">Fecha</span><strong>{{ bookingDate() ? dateLabel(bookingDate()) : 'Sin seleccionar' }}</strong></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Hora</span><strong>{{ bookingTime() }}</strong></div>
+                  <div class="flex justify-between"><span class="text-slate-400">Modalidad</span><strong>Presencial (demo)</strong></div>
+                </div>
+                <button type="button" (click)="confirmBooking()" class="mt-5 w-full rounded-xl bg-[#0b8275] px-3 py-3 text-xs font-bold text-white hover:bg-[#076c62]">Confirmar cita de demostración</button>
+                <p class="mt-3 text-center text-[11px] leading-5 text-slate-400">Esta acción solo modifica datos locales temporales. No se registra una cita real.</p>
+              </aside>
+            </div>
+          </section>
+        } @else if (section() === 'citas' || section() === 'agenda') {
+          <section class="page-enter">
+            <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+              <div><p class="mb-1 text-xs font-bold uppercase tracking-wide text-[#0b9585]">Gestión de consultas</p><h2 class="text-[26px] font-extrabold tracking-[-.8px]">{{ role() === 'medico' ? 'Mi agenda' : 'Mis citas médicas' }}</h2><p class="mt-1 text-[13px] text-slate-500">Organiza tus consultas desde un solo lugar.</p></div>
+              @if (role() === 'paciente') {
+                <button type="button" (click)="openBooking()" class="rounded-xl bg-[#087d71] px-5 py-3 text-xs font-bold text-white">＋ Nueva cita</button>
+              }
+            </div>
+            @if (role() === 'medico') {
+              <div class="rounded-2xl border border-[#e6edf1] bg-white p-5 md:p-6">
+                <h3 class="mb-5 text-base font-extrabold">Agenda de ejemplo · Hoy</h3>
+                @for (patient of patients; track patient.name) {
+                  <div class="flex flex-wrap items-center gap-4 border-b border-slate-100 py-4 last:border-none">
+                    <span class="rounded-xl bg-[#e6f7f1] px-3 py-2 text-xs font-extrabold text-[#148779]">{{ patient.time }}</span>
+                    <div class="min-w-[140px] flex-1"><p class="text-sm font-extrabold">{{ patient.name }}</p><p class="mt-1 text-xs text-slate-400">{{ patient.reason }}</p></div>
+                    <span class="rounded-full bg-[#f0f7f5] px-3 py-1 text-[11px] font-bold text-[#158c72]">{{ patient.state }}</span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="space-y-4">
+                @for (appointment of appointments(); track appointment.id) {
+                  <article class="flex flex-wrap items-center gap-4 rounded-2xl border border-[#e6edf1] bg-white p-5 md:p-6">
+                    <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e7f6f1] text-2xl text-[#128878]">▦</span>
+                    <div class="min-w-[180px] flex-1">
+                      <h3 class="text-sm font-extrabold">{{ appointment.specialty }}</h3><p class="mt-1 text-xs text-slate-500">{{ appointment.doctor }}</p>
+                      <p class="mt-2 text-xs font-semibold text-slate-600">{{ dateLabel(appointment.date) }} · {{ appointment.time }}</p>
+                    </div>
+                    <span class="rounded-full px-3 py-1.5 text-[11px] font-extrabold"
+                      [class.bg-[#e5f6ec]]="appointment.status === 'Confirmada'"
+                      [class.text-[#0d8e6c]]="appointment.status === 'Confirmada'"
+                      [class.bg-slate-100]="appointment.status !== 'Confirmada'"
+                      [class.text-slate-500]="appointment.status !== 'Confirmada'">{{ appointment.status }}</span>
+                    @if (appointment.status === 'Confirmada') {
+                      <button type="button" (click)="cancelAppointment(appointment.id)" class="rounded-lg border border-rose-100 px-3 py-2 text-[11px] font-bold text-rose-500 hover:bg-rose-50">Cancelar demo</button>
+                    }
+                  </article>
+                }
+              </div>
+            }
+          </section>
+        } @else if (section() === 'historia') {
+          <section class="page-enter">
+            <p class="mb-1 text-xs font-bold uppercase tracking-wide text-[#0b9585]">Registro de atención</p>
+            <h2 class="text-[26px] font-extrabold tracking-[-.8px]">{{ role() === 'medico' ? 'Notas clínicas' : 'Mi historia clínica' }}</h2>
+            <p class="mb-7 mt-1 text-[13px] text-slate-500">Ejemplos ficticios de seguimiento. Los registros reales se conectarán con MongoDB.</p>
+            <div class="grid gap-5 lg:grid-cols-2">
+              <article class="rounded-2xl border border-[#e6edf1] bg-white p-6">
+                <div class="mb-5 flex items-center justify-between"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e6f7f1] text-xl text-[#0b897d]">▤</span><span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-500">Ejemplo</span></div>
+                <p class="text-sm font-extrabold">Consulta de medicina general</p>
+                <p class="mt-2 text-[11px] text-slate-400">Dra. Laura Gómez · 14 oct 2026</p>
+                <p class="mt-4 text-[13px] leading-6 text-slate-600">Seguimiento preventivo de demostración. Registro clínico ficticio sin datos personales reales.</p>
+              </article>
+              <article class="rounded-2xl border border-[#e6edf1] bg-white p-6">
+                <div class="mb-5 flex items-center justify-between"><span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e9f1fd] text-xl text-[#547fc1]">▤</span><span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-500">Ejemplo</span></div>
+                <p class="text-sm font-extrabold">Control de seguimiento</p>
+                <p class="mt-2 text-[11px] text-slate-400">Dr. Andrés Rodríguez · 22 sep 2026</p>
+                <p class="mt-4 text-[13px] leading-6 text-slate-600">Nota ilustrativa del historial médico. La edición y consulta segura estarán disponibles al integrar la API.</p>
+              </article>
+            </div>
+          </section>
+        } @else if (section() === 'recetas') {
+          <section class="page-enter">
+            <p class="mb-1 text-xs font-bold uppercase tracking-wide text-[#0b9585]">Tratamientos</p>
+            <h2 class="text-[26px] font-extrabold tracking-[-.8px]">{{ role() === 'medico' ? 'Prescripciones' : 'Mis prescripciones' }}</h2>
+            <p class="mb-7 mt-1 text-[13px] text-slate-500">Presentación visual del módulo de recetas. Sin indicaciones médicas reales.</p>
+            <div class="max-w-3xl rounded-[20px] border border-[#e6edf1] bg-white p-6 md:p-8">
+              <div class="mb-6 flex items-center justify-between"><span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e7f6f1] text-2xl text-[#0c907e]">✚</span><span class="rounded-full bg-[#f0f7f5] px-3 py-1 text-[11px] font-bold text-[#168873]">Ejemplo visual</span></div>
+              <h3 class="text-lg font-extrabold">Prescripciones médicas</h3>
+              <p class="mt-2 text-sm leading-6 text-slate-500">Aquí se mostrarán los medicamentos, su estado de consulta en OpenFDA y las prescripciones emitidas por profesionales autorizados.</p>
+              <div class="mt-5 rounded-xl border border-dashed border-[#c7dcd7] bg-[#f8fbfa] p-5 text-xs leading-6 text-slate-600">No se muestran tratamientos ni dosis ficticias. El módulo real se conectará de forma segura con el backend en la fase 6.</div>
+            </div>
+          </section>
+        } @else if (section() === 'pacientes') {
+          <section class="page-enter">
+            <p class="mb-1 text-xs font-bold uppercase tracking-wide text-[#0b9585]">Consulta profesional</p><h2 class="mb-2 text-[26px] font-extrabold tracking-[-.8px]">Mis pacientes</h2>
+            <p class="mb-7 text-[13px] text-slate-500">Listado ilustrativo de personas asignadas a una agenda médica.</p>
+            <div class="rounded-2xl border border-[#e4edf1] bg-white p-5 md:p-6">
+              @for (patient of patients; track patient.name) {
+                <div class="flex flex-wrap items-center gap-4 border-b border-slate-100 py-4 last:border-none">
+                  <span class="flex h-11 w-11 items-center justify-center rounded-full bg-[#e8f4f3] text-xs font-extrabold text-[#15897c]">{{ patient.initials }}</span>
+                  <div class="flex-1"><p class="text-sm font-extrabold">{{ patient.name }}</p><p class="mt-1 text-xs text-slate-400">{{ patient.reason }}</p></div>
+                  <span class="text-xs font-semibold text-slate-500">{{ patient.time }}</span>
+                  <span class="rounded-full bg-[#e7f7f0] px-3 py-1.5 text-[11px] font-bold text-[#12896e]">{{ patient.state }}</span>
+                </div>
+              }
+            </div>
+          </section>
+        } @else if (section() === 'consultorios') {
+          <section class="page-enter">
+            <p class="mb-1 text-xs font-bold uppercase tracking-wide text-[#0b9585]">Espacios de atención</p><h2 class="mb-2 text-[26px] font-extrabold tracking-[-.8px]">Consultorios</h2>
+            <p class="mb-7 text-[13px] text-slate-500">Unidades ilustrativas para la interfaz de administración.</p>
+            <div class="grid gap-5 md:grid-cols-3">
+              @for (room of ['Consultorio 101', 'Consultorio 102', 'Consultorio 201']; track room) {
+                <article class="rounded-2xl border border-[#e4edf1] bg-white p-6"><div class="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#e9f7f3] text-xl text-[#0b8e7d]">⌂</div><h3 class="text-sm font-extrabold">{{ room }}</h3><p class="mt-1 text-xs text-slate-400">Atención presencial · Ejemplo</p><span class="mt-5 inline-flex rounded-full bg-[#e8f7f0] px-3 py-1 text-[11px] font-bold text-[#11846c]">Disponible</span></article>
+              }
+            </div>
+          </section>
+        } @else if (section() === 'reportes') {
+          <section class="page-enter">
+            <p class="mb-1 text-xs font-bold uppercase tracking-wide text-[#0b9585]">Indicadores</p><h2 class="mb-2 text-[26px] font-extrabold tracking-[-.8px]">Reportes</h2>
+            <p class="mb-7 text-[13px] text-slate-500">Gráfico ilustrativo, no representa datos reales del sistema.</p>
+            <div class="max-w-4xl rounded-2xl border border-[#e4edf1] bg-white p-6 md:p-8">
+              <h3 class="text-base font-extrabold">Actividad de ejemplo</h3>
+              <p class="mt-1 text-xs text-slate-400">Solicitudes de citas (valores ficticios)</p>
+              <div class="mt-7 flex h-[230px] items-end justify-around gap-3 border-b border-slate-200 pb-0">
+                @for (bar of [{label:'Lun',height:42},{label:'Mar',height:70},{label:'Mié',height:55},{label:'Jue',height:83},{label:'Vie',height:66},{label:'Sáb',height:35}]; track bar.label) {
+                  <div class="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                    <div class="w-full max-w-14 rounded-t-xl bg-gradient-to-t from-[#087b73] to-[#57c4ac]" [style.height.%]="bar.height"></div>
+                    <span class="text-[11px] font-semibold text-slate-400">{{ bar.label }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        }
+
+        <footer class="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-[#e4eced] pt-5 text-[11px] text-[#9aa8af]">
+          <p>© MediConnect Pro · Proyecto de grado Full-Stack</p>
+          <p>Fase 5 · Interfaz con datos de demostración</p>
+        </footer>
       </div>
-    </div>
+    </main>
   </div>
-</main>
-
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-
-
-<router-outlet />
+</div>
