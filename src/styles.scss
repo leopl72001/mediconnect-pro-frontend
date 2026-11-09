@@ -1,1 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root { color-scheme: light; font-family: 'DM Sans', sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f8fa; color: #10243a; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+h1, h2, h3, h4 { font-family: Manrope, 'DM Sans', sans-serif; }
+::selection { background: #c8f5e7; color: #0f766e; }

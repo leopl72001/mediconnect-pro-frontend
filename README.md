@@ -1,59 +1,77 @@
-# MediconnectProFrontend
+# MediConnect Pro — Frontend (Angular 21+)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, construida con **Angular 21**, **Signals**, **zoneless** y **Tailwind CSS 4**.
 
-## Development server
+- **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
+- **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
+- **Estado actual:** fase 5, UI responsiva de demostración. **Los datos y acciones del frontend todavía son locales y ficticios.** La autenticación, persistencia y conexión real al backend pertenecen a la fase 6.
 
-To start a local development server, run:
+## Funcionalidades visuales implementadas
 
-```bash
-ng serve
+- Panel responsivo con barra lateral y menú móvil.
+- Selector de rol **Paciente / Médico / Administrador** para visualizar diseños distintos; **no es autenticación real**.
+- Vista de especialistas con buscador y filtros por especialidad.
+- Flujo de reserva y cancelación local con **Angular Signals**. La operación **no envía solicitudes HTTP**.
+- Panel clínico, notas, prescripciones, consultorios y estadísticas **ilustrativos**.
+- Interfaz completamente en español; etiquetas visibles que distinguen la demostración de datos reales.
+
+## Requisitos
+
+- Node.js 24 + npm 11, Docker Desktop recomendado en Windows si la política de seguridad bloquea módulos nativos de Rollup.
+
+## Ejecutar en Windows con Docker
+
+En PowerShell, desde la carpeta `mediconnect-pro-frontend`:
+
+```powershell
+docker run --rm -it -p 4200:4200 `
+  --mount "type=bind,source=$((Get-Location).Path),target=/app" `
+  --mount "type=volume,source=mediconnect-pro-node-modules,target=/app/node_modules" `
+  -w /app node:24-bookworm `
+  sh -lc "npm ci && npm start -- --host 0.0.0.0"
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinado **solo al desarrollo local**.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Si usas Node.js directamente en un sistema compatible:
 
 ```bash
-ng generate component component-name
+npm ci
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Compilación y pruebas
 
-```bash
-ng generate --help
+Con Docker en marcha, en otra terminal PowerShell:
+
+```powershell
+$angularContainer = docker ps --filter "ancestor=node:24-bookworm" --format "{{.ID}}" | Select-Object -First 1
+docker exec $angularContainer sh -lc "npm run build && npm test -- --watch=false"
 ```
 
-## Building
+GitHub Actions repite estas comprobaciones automáticamente en la rama de desarrollo y en `main`.
 
-To build the project run:
+## Arquitectura de diseño y próximos pasos
 
-```bash
-ng build
+```text
+src/app/app.ts         Estado de UI con Angular Signals (datos ficticios)
+src/app/app.html       Paneles y flujos visuales responsivos
+src/app/app.scss       Transiciones discretas
+src/tailwind.css       Tailwind CSS 4
+src/styles.scss        Tipografía y estilos base
+src/app/app.spec.ts    Pruebas con Vitest
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+La interfaz de demostración concentra varios flujos en el componente raíz para validarlos visualmente. **Antes de integrar la API**, se extraerán componentes por dominio, servicios tipados, guards e interceptor JWT.
 
-## Running unit tests
+### Fases pendientes
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- **6:** conectar formularios y datos reales con Spring Boot, JWT y validación por rol.
+- **7:** SSE/WebSockets y actualizaciones en tiempo real.
+- **8:** imágenes optimizadas, almacenamiento privado y sincronización offline.
+- **9:** Vitest y Cypress, 80% de cobertura y pirámide de pruebas.
+- **10:** Docker multi-stage, SonarCloud, CI/CD y URL pública.
 
-```bash
-ng test
-```
+### Gobernanza de IA
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Consulta [.cursorrules](.cursorrules) y [bitácora de IA](docs/ai-log.md). Ninguna pantalla o resultado de demostración debe presentarse como una funcionalidad integrada y operativa en producción.
