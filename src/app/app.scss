@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.page-enter { animation: fade-up .28s ease-out both; }
+@keyframes fade-up { from { opacity: .4; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.soft-dot-grid {
+  background-image: radial-gradient(circle at center, rgba(255,255,255,.2) 1.1px, transparent 1.1px);
+  background-size: 22px 22px;
+}
+
+.soft-scroll::-webkit-scrollbar { width: 6px; }
+.soft-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; }
