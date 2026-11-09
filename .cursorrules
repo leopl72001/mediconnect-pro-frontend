@@ -1,0 +1,16 @@
+# Reglas Cursor AI — MediConnect Pro Frontend
+
+## Stack y arquitectura
+- Angular 21+ con detección de cambios zoneless, componentes standalone, Signals y Tailwind CSS 4.
+- TypeScript estricto, componentes pequeños, accesibles y responsivos. No utilizar Zone.js.
+- La UI utiliza datos ficticios locales durante la fase 5; marcar las vistas de demostración de forma visible. NO fingir autenticación, citas o datos clínicos persistidos.
+- En fase 6 integrar el backend Spring Boot 4 mediante servicios HTTP tipados, guards, interceptor de JWT y contratos OpenAPI. Separar DTO, API service y componentes.
+- Formularios validados, estados de carga, error y vacíos; prevenir acciones duplicadas.
+
+## Calidad y seguridad
+- Mantener Vitest pasando. Meta de fase de calidad: >=80% de cobertura y 3 escenarios Cypress E2E.
+- No publicar tokens, credenciales, datos médicos reales ni secretos.
+- Accesibilidad: controles con nombre, etiquetas, teclado, contraste y estados de foco visibles.
+- Preferir Tailwind y SCSS mínimo. No añadir dependencias sin necesidad y revisar el rendimiento.
+- Documentar trabajo asistido por IA: intención, revisión humana, riesgos, pruebas en docs/ai-log.md.
+- No declarar funcionalidades completadas sin evidencia real (tests y despliegue cuando aplique).
