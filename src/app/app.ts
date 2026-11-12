@@ -10,6 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { PatientProfilePage } from './features/profile/patient-profile';
 import { ClinicalPage } from './features/clinical/clinical-page';
 import { AdminPage } from './features/admin/admin-page';
+import { AppointmentNotifications } from './core/appointment-notifications';
 
 type Role = 'paciente' | 'medico' | 'admin';
 type Section =
@@ -53,6 +54,8 @@ export class App {
   readonly auth = inject(AuthService);
   private readonly catalog = inject(CatalogService);
   private readonly appointmentApi = inject(AppointmentApiService);
+  private readonly realtime = inject(AppointmentNotifications);
+  readonly realtimeConnected = this.realtime.connected;
   private readonly destroyRef = inject(DestroyRef);
   readonly demoMode = signal(false);
   readonly realDoctors = signal<DoctorView[]>([]);
@@ -107,13 +110,31 @@ export class App {
         this.loadRealDoctors();
         this.loadOffices();
         this.loadRealAppointments();
+        const token = this.auth.accessToken();
+        if (token && session.role !== 'ROLE_ADMIN') this.realtime.connect(token);
       } else {
+        this.realtime.disconnect();
         this.realDoctors.set([]);
         this.catalogError.set('');
         this.realOffices.set([]);
         this.realAppointments.set([]);
       }
     });
+    effect(() => {
+      const update = this.realtime.lastEvent();
+      if (!update || !this.auth.authenticated() || this.demoMode()) return;
+      this.loadRealAppointments();
+      this.notice.set(update.status === 'SCHEDULED'
+        ? 'Nueva cita registrada: la agenda se actualizó automáticamente en tiempo real.'
+        : 'Una cita cambió a Cancelada: agenda sincronizada en tiempo real.');
+    });
+    // A dropped connection can miss notifications: reconcile on every reconnect.
+    effect(() => {
+      if (this.realtime.connected() && this.auth.authenticated() && !this.demoMode()) {
+        this.loadRealAppointments();
+      }
+    });
+    this.destroyRef.onDestroy(() => this.realtime.disconnect());
   }
 
   readonly role = signal<Role>('paciente');

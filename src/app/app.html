@@ -82,6 +82,15 @@
           <span class="hidden items-center gap-1.5 rounded-full bg-[#edf9f5] px-3 py-1.5 text-[11px] font-bold text-[#138975] sm:inline-flex">
             <span class="h-1.5 w-1.5 rounded-full bg-[#14a988]"></span> {{ demoMode() ? 'Entorno de demostración' : 'Sesión JWT activa' }}
           </span>
+          @if (!demoMode() && role() !== 'admin') {
+            <span class="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold lg:inline-flex"
+              [class.bg-emerald-50]="realtimeConnected()" [class.text-emerald-700]="realtimeConnected()"
+              [class.bg-slate-100]="!realtimeConnected()" [class.text-slate-500]="!realtimeConnected()"
+              role="status">
+              <span class="h-1.5 w-1.5 rounded-full" [class.bg-emerald-500]="realtimeConnected()" [class.bg-slate-400]="!realtimeConnected()"></span>
+              {{ realtimeConnected() ? 'SSE en vivo' : 'SSE reconectando' }}
+            </span>
+          }
           @if (demoMode()) {
             <label class="sr-only" for="demo-role">Seleccionar rol de demostración</label>
             <select id="demo-role" [value]="role()" (change)="setRole($any($event.target).value)"
@@ -105,9 +114,9 @@
         <div class="mb-7 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500">
           <span class="inline-flex items-center gap-2 rounded-full border border-[#dcece6] bg-white px-3 py-1.5 text-[#168373]">
             <span class="h-1.5 w-1.5 rounded-full bg-[#13a68c]"></span>
-            Fase 6 · Conexión real con Spring Boot
+            Fase 7 · Actualización de citas en tiempo real
           </span>
-          <span>{{ demoMode() ? 'Datos ficticios. El modo demostración no conecta con la API.' : 'Sesión JWT real; médicos, consultorios y citas se consultan desde Spring Boot. Historial clínico aún es demostrativo.' }}</span>
+          <span>{{ demoMode() ? 'Datos ficticios. El modo demostración no conecta con la API.' : 'Sesión JWT real; médicos, consultorios, citas y registros clínicos usan Spring Boot. Las citas se sincronizan por SSE.' }}</span>
         </div>
 
         @if (notice()) {
