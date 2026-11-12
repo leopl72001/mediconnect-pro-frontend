@@ -128,6 +128,12 @@ export class App {
         ? 'Nueva cita registrada: la agenda se actualizó automáticamente en tiempo real.'
         : 'Una cita cambió a Cancelada: agenda sincronizada en tiempo real.');
     });
+    // A dropped connection can miss notifications: reconcile on every reconnect.
+    effect(() => {
+      if (this.realtime.connected() && this.auth.authenticated() && !this.demoMode()) {
+        this.loadRealAppointments();
+      }
+    });
     this.destroyRef.onDestroy(() => this.realtime.disconnect());
   }
 
