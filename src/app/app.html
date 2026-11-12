@@ -117,7 +117,30 @@
           </div>
         }
 
-        @if (section() === 'resumen' && role() === 'paciente') {
+        @if (!demoMode() && role() === 'admin') {
+          <app-admin-page [view]="adminView()"></app-admin-page>
+        } @else if (!demoMode() && section() === 'perfil' && role() === 'paciente') {
+          <app-patient-profile></app-patient-profile>
+        } @else if (!demoMode() && (section() === 'historia' || section() === 'recetas') && (role() === 'paciente' || role() === 'medico')) {
+          <app-clinical-page [kind]="clinicalKind()" [role]="clinicalRole()" [appointments]="realAppointments()"></app-clinical-page>
+        } @else if (!demoMode() && role() === 'medico' && section() === 'pacientes') {
+          <section class="page-enter max-w-4xl">
+            <p class="mb-2 text-xs font-extrabold uppercase tracking-wider text-teal-700">Pacientes · Agenda real</p>
+            <h2 class="text-2xl font-extrabold">Citas de pacientes asignadas</h2>
+            <p class="mt-2 text-sm leading-6 text-slate-500">El backend actual entrega citas asignadas, pero no expone nombres ni historiales de otros pacientes en este endpoint. Se muestra el identificador de la cita por privacidad.</p>
+            <div class="mt-6 space-y-3">
+              @for (appointment of realAppointments(); track appointment.id) {
+                <div class="rounded-2xl border border-slate-200 bg-white p-5">
+                  <p class="text-xs font-bold text-teal-700">{{ realAppointmentDate(appointment.startTime) }}</p>
+                  <p class="mt-2 text-sm font-semibold">Cita {{ appointment.id.slice(0, 8) }} · {{ appointment.status === 'SCHEDULED' ? 'Programada' : 'Cancelada' }}</p>
+                  <p class="mt-1 text-xs text-slate-500">{{ realAppointmentOffice(appointment) }}</p>
+                </div>
+              } @empty {
+                <p class="rounded-xl bg-white p-6 text-sm text-slate-500">No hay citas asignadas.</p>
+              }
+            </div>
+          </section>
+        } @else if (section() === 'resumen' && role() === 'paciente') {
           <section class="page-enter">
             <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
               <div>
@@ -170,8 +193,8 @@
               </div>
               <div class="rounded-2xl border border-[#e7edf1] bg-white p-5 shadow-[0_3px_14px_rgba(27,65,91,.025)]">
                 <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#eef2ff] text-xl text-[#6174cb]">✚</div>
-                <div class="flex items-end gap-2"><span class="text-[27px] font-extrabold tracking-tight">02</span><span class="pb-1 text-xs font-medium text-slate-400">documentos</span></div>
-                <p class="mt-1 text-xs font-semibold text-slate-500">Registros clínicos de ejemplo</p>
+                <div class="flex items-end gap-2"><span class="text-[27px] font-extrabold tracking-tight">{{ demoMode() ? '02' : '—' }}</span><span class="pb-1 text-xs font-medium text-slate-400">{{ demoMode() ? 'documentos' : 'consulta aparte' }}</span></div>
+                <p class="mt-1 text-xs font-semibold text-slate-500">{{ demoMode() ? 'Registros clínicos de ejemplo' : 'Ver historia clínica real en el menú' }}</p>
               </div>
               <div class="rounded-2xl border border-[#e7edf1] bg-white p-5 shadow-[0_3px_14px_rgba(27,65,91,.025)]">
                 <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff5e5] text-xl text-[#d99b35]">☆</div>
@@ -261,6 +284,26 @@
             </div>
           </section>
         } @else if (section() === 'resumen' && role() === 'medico') {
+          @if (!demoMode()) {
+            <section class="page-enter">
+              <p class="mb-1 text-xs font-bold capitalize text-teal-700">{{ today }}</p>
+              <h2 class="text-2xl font-extrabold tracking-tight text-[#13283b]">Panel del médico</h2>
+              <p class="mb-7 mt-2 text-sm text-slate-500">Citas asignadas a tu cuenta, consultadas en Spring Boot.</p>
+              <div class="mb-6 grid gap-4 sm:grid-cols-3">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6"><span class="text-xs text-slate-500">Citas programadas</span><p class="mt-3 text-3xl font-extrabold">{{ realUpcomingAppointments().length }}</p></div>
+                <div class="rounded-2xl border border-slate-200 bg-white p-6"><span class="text-xs text-slate-500">Agenda del backend</span><p class="mt-3 text-3xl font-extrabold">{{ realAppointments().length }}</p></div>
+                <div class="rounded-2xl border border-slate-200 bg-white p-6"><p class="text-xs text-slate-500">Fuente de datos</p><p class="mt-4 text-sm font-extrabold text-teal-700">PostgreSQL</p></div>
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <button type="button" (click)="goTo('agenda')" class="rounded-xl bg-teal-700 px-5 py-3 text-xs font-bold text-white">Consultar agenda real →</button>
+                <button type="button" (click)="goTo('historia')" class="rounded-xl border border-teal-200 bg-white px-5 py-3 text-xs font-bold text-teal-700">Registrar nota clínica</button>
+                <button type="button" (click)="goTo('recetas')" class="rounded-xl border border-teal-200 bg-white px-5 py-3 text-xs font-bold text-teal-700">Crear prescripción</button>
+              </div>
+              @if (appointmentsError()) {
+                <p role="alert" class="mt-5 rounded-xl bg-rose-50 p-4 text-xs text-rose-700">{{ appointmentsError() }}</p>
+              }
+            </section>
+          } @else {
           <section class="page-enter">
             <p class="mb-1 text-xs font-bold capitalize text-[#0b9585]">{{ today }}</p>
             <h2 class="text-[27px] font-extrabold tracking-[-.8px] text-[#13283b]">{{ demoMode() ? 'Buen día, Dra. Laura' : 'Buen día, profesional' }} <span aria-hidden="true">👋</span></h2>
@@ -288,6 +331,7 @@
               }
             </div>
           </section>
+          }
         } @else if (section() === 'resumen' && role() === 'admin') {
           <section class="page-enter">
             <p class="mb-1 text-xs font-bold capitalize text-[#0b9585]">{{ today }}</p>
@@ -629,7 +673,7 @@
 
         <footer class="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-[#e4eced] pt-5 text-[11px] text-[#9aa8af]">
           <p>© MediConnect Pro · Proyecto de grado Full-Stack</p>
-          <p>Fase 6 · Sesión JWT real / datos visuales ficticios</p>
+          <p>Fase 6 · Integración real JWT / áreas demo claramente separadas</p>
         </footer>
       </div>
     </main>
