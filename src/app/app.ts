@@ -1,7 +1,10 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { AuthService, type UserRole } from './core/auth.service';
 import { AuthPage } from './auth/auth-page';
+import { CatalogService, type DoctorView } from './core/catalog.service';
 
 type Role = 'paciente' | 'medico' | 'admin';
 type Section =
@@ -43,7 +46,26 @@ interface Appointment {
 })
 export class App {
   readonly auth = inject(AuthService);
+  private readonly catalog = inject(CatalogService);
+  private readonly destroyRef = inject(DestroyRef);
   readonly demoMode = signal(false);
+  readonly realDoctors = signal<DoctorView[]>([]);
+  readonly catalogLoading = signal(false);
+  readonly catalogError = signal('');
+  readonly realFilteredDoctors = computed(() => {
+    const query = this.search().trim().toLocaleLowerCase('es');
+    const specialty = this.specialty();
+    return this.realDoctors().filter(doctor => {
+      const name = `${doctor.firstName} ${doctor.lastName}`.toLocaleLowerCase('es');
+      return (specialty === 'Todas' || doctor.specialtyName === specialty) &&
+        (name.includes(query) || doctor.specialtyName.toLocaleLowerCase('es').includes(query));
+    });
+  });
+  readonly availableSpecialties = computed(() => {
+    return this.demoMode()
+      ? this.specialties
+      : ['Todas', ...new Set(this.realDoctors().map(d => d.specialtyName))];
+  });
 
   constructor() {
     effect(() => {
@@ -54,6 +76,10 @@ export class App {
         this.section.set('resumen');
         this.mobileMenuOpen.set(false);
         this.notice.set('');
+        this.loadRealDoctors();
+      } else {
+        this.realDoctors.set([]);
+        this.catalogError.set('');
       }
     });
   }
@@ -132,6 +158,7 @@ export class App {
   readonly appointmentCount = computed(() => this.upcomingAppointments().length);
 
   enterDemo(): void {
+    this.auth.logout();
     this.demoMode.set(true);
     this.role.set('paciente');
     this.section.set('resumen');
@@ -140,6 +167,8 @@ export class App {
 
   leaveWorkspace(): void {
     this.auth.logout();
+    this.realDoctors.set([]);
+    this.catalogError.set('');
     this.demoMode.set(false);
     this.role.set('paciente');
     this.section.set('resumen');
@@ -159,6 +188,25 @@ export class App {
     this.notice.set('');
   }
 
+  loadRealDoctors(): void {
+    if (!this.auth.authenticated() || this.demoMode()) return;
+    this.catalogLoading.set(true);
+    this.catalogError.set('');
+    this.catalog.doctors()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.catalogLoading.set(false))
+      )
+      .subscribe({
+        next: doctors => {
+          if (this.auth.authenticated()) this.realDoctors.set(doctors);
+        },
+        error: () => {
+          this.catalogError.set('No pudimos cargar los especialistas. Verifica la conexión al backend.');
+        }
+      });
+  }
+
   goTo(section: Section): void {
     this.section.set(section);
     this.mobileMenuOpen.set(false);
@@ -166,11 +214,17 @@ export class App {
   }
 
   openBooking(doctorId = 'laura'): void {
+    if (!this.demoMode()) {
+      this.goTo('medicos');
+      this.notice.set('El catálogo de médicos ya es real. La reserva de citas reales es el próximo paso.');
+      return;
+    }
     this.bookingDoctorId.set(doctorId);
     this.goTo('reservar');
   }
 
   confirmBooking(): void {
+    if (!this.demoMode()) return;
     if (!this.bookingDate() || !this.bookingTime()) {
       this.notice.set('Selecciona una fecha y una hora.');
       return;
@@ -187,6 +241,7 @@ export class App {
   }
 
   cancelAppointment(id: number): void {
+    if (!this.demoMode()) return;
     this.appointments.update(items => items.map(item =>
       item.id === id && item.status === 'Confirmada' ? { ...item, status: 'Cancelada' } : item
     ));
