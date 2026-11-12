@@ -26,6 +26,13 @@
 - **Limitaciones:** Spring Boot no devuelve calificaciones ni disponibilidad; no mostrarlas como datos reales. Todavía no se realizan reservas o cancelaciones desde el frontend autenticado.
 - **Validación:** CI de Angular y Vitest. Pendiente prueba visual con datos de Docker y creación de profesionales por ADMIN si el catálogo está vacío.
 
+## Registro 005 — Reserva médica real (fase 6)
+- **Objetivo:** usar la API de Spring Boot 4 para crear, consultar y cancelar citas médicas desde Angular.
+- **Asistencia:** servicio HTTP tipado, formulario de consultorio activo y médico real, timestamps ISO y validaciones, mensajes de respuesta HTTP 409/400/403, agenda del paciente y del médico.
+- **Decisiones:** exigir rol paciente para reservar/cancelar, horario de la plataforma en Colombia (UTC-5), duración de 30 minutos; conservar las reglas de solapamiento y cancelación de más de 24 horas en el backend.
+- **Alcance honesto:** la interfaz no afirma disponibilidad anticipada; la única confirmación es la respuesta de creación del servidor. Datos médicos, recetas y paneles secundarios aún son demostrativos.
+- **Evidencia:** CI ejecuta build y Vitest, incluyendo pruebas unitarias de los endpoints. Falta prueba E2E manual desde Docker con consultorio real.
+
 ## Reglas de revisión humana
 1. Revisar cada cambio de IA en GitHub.
 2. Validar builds y pruebas antes de fusionar.
