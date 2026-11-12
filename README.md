@@ -25,7 +25,7 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 En PowerShell, desde la carpeta `mediconnect-pro-frontend`. Primero enciende el backend con `docker compose up -d` en `mediconnect-pro-backend` y verifica `http://127.0.0.1:8082/actuator/health`:
 
 ```powershell
-docker run --rm -it --name mediconnect-pro-angular -p 127.0.0.1:4200:4200 `
+docker run --rm -it --name mediconnect-pro-angular --network mediconnect-pro_default -p 127.0.0.1:4200:4200 `
   --mount "type=bind,source=$((Get-Location).Path),target=/app" `
   --mount "type=volume,source=mediconnect-pro-node-modules,target=/app/node_modules" `
   -w /app node:24-bookworm `
@@ -36,7 +36,7 @@ Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinad
 
 **Cómo probar JWT:** abre la aplicación, selecciona `Registrarse`, introduce datos ficticios y una contraseña de al menos 8 caracteres. El frontend llama a `POST /api/v1/auth/register` y luego `POST /api/v1/auth/login`; el token se mantiene en memoria hasta cerrar sesión o recargar. Un interceptor añade `Authorization: Bearer …` a solicitudes protegidas. El backend valida firma y permisos.
 
-**Conexión de desarrollo:** `angular.json` usa `proxy.conf.json` para enviar `/api` desde el contenedor Angular hacia `http://host.docker.internal:8082`. Requiere Docker Desktop y el backend corriendo en el host. En el despliegue cloud se configurará un reverse proxy apropiado: esta URL es solo de desarrollo.
+**Conexión de desarrollo:** `angular.json` usa `proxy.conf.json` para enviar `/api` desde el contenedor Angular hacia `http://app:8081`. Requiere Docker Desktop y que los contenedores del backend estén corriendo en la red `mediconnect-pro_default`. Así el proxy accede directamente al servicio `app` de Compose por su puerto interno 8081. En el despliegue cloud se configurará un reverse proxy apropiado: esta URL es solo de desarrollo.
 
 **Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. El panel muestra únicamente **contenido de demostración** aunque el usuario haya iniciado sesión realmente. Roles en UI son solo presentacionales; la seguridad depende de Spring Security.
 
