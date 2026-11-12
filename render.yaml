@@ -1,0 +1,14 @@
+# Render Blueprint - Angular 21 desde Dockerfile multi-stage.
+# BACKEND_ORIGIN debe apuntar al HTTPS REAL del backend publicado.
+services:
+  - type: web
+    name: mediconnect-pro-ui
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: BACKEND_ORIGIN
+        sync: false
