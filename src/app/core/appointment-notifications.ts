@@ -11,6 +11,28 @@ export interface AppointmentRealtimeEvent {
  * JWT is sent in an Authorization header using fetch streaming.
  * Native EventSource does not support Authorization headers; we never put tokens in URLs.
  */
+export function parseAppointmentFrame(frame: string): Omit<AppointmentRealtimeEvent, 'sequence'> | null {
+  const lines = frame.split(/\r?\n/);
+  const name = lines.find(line => line.startsWith('event:'))?.slice(6).trim();
+  if (name !== 'appointment-changed') return null;
+  const payload = lines.filter(line => line.startsWith('data:'))
+    .map(line => line.slice(5).trim()).join('\n');
+  if (!payload) return null;
+  try {
+    const event = JSON.parse(payload) as Partial<AppointmentRealtimeEvent>;
+    if (typeof event.appointmentId !== 'string' ||
+        (event.status !== 'SCHEDULED' && event.status !== 'CANCELLED') ||
+        typeof event.timestamp !== 'string') return null;
+    return {
+      appointmentId: event.appointmentId,
+      status: event.status,
+      timestamp: event.timestamp
+    };
+  } catch {
+    return null;
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class AppointmentNotifications {
   readonly connected = signal(false);
@@ -87,26 +109,8 @@ export class AppointmentNotifications {
   }
 
   private consume(frame: string): void {
-    const lines = frame.split(/\r?\n/);
-    const name = lines.find(line => line.startsWith('event:'))?.slice(6).trim();
-    if (name !== 'appointment-changed') return;
-    const payload = lines.filter(line => line.startsWith('data:'))
-      .map(line => line.slice(5).trim()).join('\n');
-    if (!payload) return;
-
-    try {
-      const event = JSON.parse(payload) as Partial<AppointmentRealtimeEvent>;
-      if (!event.appointmentId ||
-          (event.status !== 'SCHEDULED' && event.status !== 'CANCELLED') ||
-          !event.timestamp) return;
-      this.lastEvent.set({
-        appointmentId: event.appointmentId,
-        status: event.status,
-        timestamp: event.timestamp,
-        sequence: ++this.counter
-      });
-    } catch {
-      // Ignore malformed stream frames instead of disrupting the interface.
-    }
+    const event = parseAppointmentFrame(frame);
+    if (!event) return;
+    this.lastEvent.set({ ...event, sequence: ++this.counter });
   }
 }
