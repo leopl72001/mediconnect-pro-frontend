@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { signal } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthService } from '../../core/auth.service';
@@ -28,7 +28,7 @@ describe('Mis archivos privados — flujo local seguro', () => {
     add: ReturnType<typeof vi.fn>;
     remove: ReturnType<typeof vi.fn>;
   };
-  let fixture: ReturnType<typeof TestBed.createComponent<PrivateMediaPage>>;
+  let fixture: ComponentFixture<PrivateMediaPage>;
   let page: PrivateMediaPage;
 
   beforeEach(async () => {
