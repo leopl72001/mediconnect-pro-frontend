@@ -41,6 +41,14 @@
 - **Verificación:** build y tests unitarios por GitHub Actions. Recorrido manual completo aún pendiente: [guía](prueba-integral-fase6.md).
 - **Limitaciones:** no existen estadísticas avanzadas, disponibilidad anticipada ni identidad de pacientes en la API de agenda; no inventar esos datos. Aún faltan SSE, medios, offline, cobertura y Cypress, CD/despliegue.
 
+## Registro 007 — Notificaciones en tiempo real con SSE (fase 7)
+- **Objetivo:** actualizar la agenda de paciente y médica de forma inmediata tras crear/cancelar citas reales, sin refrescar.
+- **Asistencia IA:** diseño de un evento transaccional backend `AFTER_COMMIT`, emisores `SseEmitter` por usuario, heartbeat y cliente Angular con fetch streaming, parser robusto y Signals.
+- **Seguridad:** JWT únicamente en cabecera HTTP (EventSource nativo no permite cabeceras personalizadas); canales limitados al paciente y médico asignado, mensajes sin información clínica; streams cortos para renovar verificación al reconectar.
+- **Calidad:** pruebas unitarias de parser y cabecera JWT, compilar frontend y backend en GitHub Actions. Aún falta prueba real de dos sesiones simultáneas con Docker local.
+- **Deuda técnica:** SSE solo distribuye en una instancia Spring; en cloud multirréplica usar Redis Pub/Sub. No hay notificaciones móviles ni persistencia de eventos históricos.
+- **Evidencia:** [plan de prueba de fase 7](prueba-fase7-sse.md).
+
 ## Reglas de revisión humana
 1. Revisar cada cambio de IA en GitHub.
 2. Validar builds y pruebas antes de fusionar.
