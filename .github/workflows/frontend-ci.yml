@@ -4,6 +4,10 @@ on:
     branches: [main, 'feature/**']
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
@@ -17,5 +21,18 @@ jobs:
         run: npm ci
       - name: Compilar interfaz
         run: npm run build
-      - name: Pruebas Vitest
-        run: npm test -- --watch=false
+      - name: Instalar reporter compatible con Vitest
+        run: npm install --no-save --package-lock=false @vitest/coverage-v8@4.1.12
+      - name: Pruebas Vitest con cobertura real
+        run: npm test -- --watch=false --coverage
+      - name: Mostrar porcentajes reales de Vitest
+        run: node scripts/report-coverage.cjs
+      - name: Construir Docker multi-stage de producción
+        run: docker build -t mediconnect-pro-ui:test .
+      - name: Publicar cobertura para el jurado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-vitest
+          path: coverage/
+          if-no-files-found: warn

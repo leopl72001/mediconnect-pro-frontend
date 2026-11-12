@@ -1,0 +1,80 @@
+name: MediConnect Cypress E2E (3 flujos críticos)
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-e2e:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 28
+    steps:
+      - name: Obtener Angular
+        uses: actions/checkout@v4
+      - name: Obtener backend separado
+        uses: actions/checkout@v4
+        with:
+          repository: leopl72001/mediconnect-pro-backend
+          path: backend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Preparar Docker de pruebas con credenciales ficticias
+        shell: bash
+        run: |
+          cp backend/.env.example backend/.env
+          echo "CYPRESS_adminEmail=$(sed -n 's/^DEV_ADMIN_EMAIL=//p' backend/.env)" >> "$GITHUB_ENV"
+          echo "CYPRESS_adminPassword=$(sed -n 's/^DEV_ADMIN_PASSWORD=//p' backend/.env)" >> "$GITHUB_ENV"
+          docker compose -f backend/docker-compose.yml --project-directory backend up -d --build
+      - name: Esperar API real
+        shell: bash
+        run: |
+          for i in $(seq 1 45); do
+            if curl -fsS --max-time 4 http://127.0.0.1:8082/actuator/health | grep -q '"status":"UP"'; then
+              echo "Backend UP"
+              exit 0
+            fi
+            sleep 5
+          done
+          docker compose -f backend/docker-compose.yml --project-directory backend logs --tail=100 app
+          exit 1
+      - name: Instalar Angular y Cypress
+        run: |
+          npm ci
+          npm install --no-save --package-lock=false cypress@15.18.1
+          npx cypress verify
+      - name: Iniciar Angular con proxy hacia backend Docker
+        shell: bash
+        run: |
+          (npm start -- --host 127.0.0.1 --port 4200 --proxy-config proxy.ci.json > angular-e2e.log 2>&1 &)
+          for i in $(seq 1 45); do
+            if curl -fsS --max-time 4 http://127.0.0.1:4200/ > /dev/null; then
+              echo "Angular UP"
+              exit 0
+            fi
+            sleep 3
+          done
+          cat angular-e2e.log
+          exit 1
+      - name: Ejecutar 3 pruebas reales con Chrome
+        run: npx cypress run --browser chrome
+      - name: Evidencias Cypress ante fallos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: capturas-cypress
+          path: |
+            cypress/screenshots/
+            cypress/videos/
+            angular-e2e.log
+          if-no-files-found: ignore
+      - name: Cerrar infraestructura efímera
+        if: always()
+        shell: bash
+        run: docker compose -f backend/docker-compose.yml --project-directory backend down -v

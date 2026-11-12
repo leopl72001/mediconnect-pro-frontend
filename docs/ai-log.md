@@ -57,6 +57,22 @@
 - **Deuda técnica:** para producción se requiere cifrado de cola local, control empresarial de claves, retención, antivirus, auditoría, reglas de eliminación, backend de almacenamiento duradero y estudio normativo aplicable. Modo offline actual **no es PWA instalable**; la sincronización diferida funciona desde una pestaña previamente abierta.
 - **Validación pendiente:** prueba manual de una imagen WebP y cola 1→0 en navegador. [Guía única](prueba-fase8-medios.md).
 
+## Registro 009–010 — Calidad avanzada, cloud y defensa del proyecto de grado
+
+**Objetivo:** cumplir los requerimientos formales de la capstone más allá de la demo: reportes de cobertura, integración PostgreSQL de verdad, tres recorridos Cypress y pipeline de publicación/despliegue.
+
+**Estrategia asistida por IA:** se propusieron test de repositorio con Testcontainers, esquema inicial Flyway de producción, validación de estado mediante GitHub Actions, tres casos Cypress contra Angular y el backend real, informe SonarCloud condicional, Dockerfiles multi-stage y blueprints Render. Se crearon diagramas Mermaid y guion oral de 15 minutos. Los cambios se hicieron en ramas `feature/capstone-calidad-cloud` de ambos repositorios, sin tocar MediConnect v1.
+
+**Validación humana y automatizada:** GitHub Actions de backend pasó JaCoCo y Testcontainers con una base PostgreSQL efímera, incluida la migración Flyway. Angular compiló y sus tests Vitest pasaron. La primera ejecución Cypress encontró un problema real: el menú lateral estaba escondido en el viewport del runner. Se corrigió configurando viewport de escritorio y se volvió a ejecutar. Los errores encontrados se registran como evidencia para explicar la revisión crítica de la IA, no se maquillan.
+
+**Cobertura real observada (no equivale a aprobar):** Java JaCoCo 42.73 % líneas, 34.39 % ramas; Angular Vitest 31.12 % líneas, 28.35 % ramas. Sigue **pendiente** alcanzar el 80 %. Los reportes generados se adjuntan como artefactos de GitHub Actions.
+
+**Decisiones de seguridad:** no automatizar despliegue con contraseñas públicas o las del archivo local `.env`; Render y SonarCloud requieren secretos y aprobación del propietario. Nginx en frontend conserva JWT/SSE bajo un único origen. Cloud de un solo backend replica; para múltiples instancias SSE necesita un bus compartido. Cola IndexedDB sin cifrado únicamente con archivos ficticios.
+
+**Prompt Engineering / reglas:** las instrucciones de `.cursorrules` definen uso de Angular Signals y separación de flujos demo/reales, REST con DTOs y validación de roles en backend, no poner secretos en frontend ni reportar resultados de cobertura no comprobados. La IA aceleró scaffolding, pruebas, revisión de logs y documentación, pero las decisiones y la defensa son responsabilidad del desarrollador.
+
+**Pendiente de aprobación externa:** deploy Render, URL pública, servicios de MongoDB/Redis, dashboard SonarCloud y prueba de seguridad de datos reales. La app solo es prototipo académico con datos ficticios.
+
 ## Reglas de revisión humana
 1. Revisar cada cambio de IA en GitHub.
 2. Validar builds y pruebas antes de fusionar.
