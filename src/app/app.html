@@ -1,4 +1,6 @@
-
+@if (!auth.authenticated() && !demoMode()) {
+  <app-auth-page (enterDemo)="enterDemo()"></app-auth-page>
+} @else {
 <div class="min-h-screen bg-[#f5f8fb] text-slate-800">
   @if (mobileMenuOpen()) {
     <button type="button" aria-label="Cerrar menú" class="fixed inset-0 z-40 bg-slate-950/45 lg:hidden" (click)="mobileMenuOpen.set(false)"></button>
@@ -59,7 +61,7 @@
             {{ role() === 'paciente' ? 'CP' : role() === 'medico' ? 'LG' : 'AD' }}
           </span>
           <div class="min-w-0 flex-1">
-            <p class="truncate text-xs font-extrabold">{{ role() === 'paciente' ? 'Carlos Pérez' : role() === 'medico' ? 'Dra. Laura Gómez' : 'Administrador' }}</p>
+            <p class="truncate text-xs font-extrabold">{{ demoMode() ? (role() === 'paciente' ? 'Carlos Pérez' : role() === 'medico' ? 'Dra. Laura Gómez' : 'Administrador') : auth.user()?.email }}</p>
             <p class="text-[11px] text-slate-400">{{ roleLabel() }} · Demo</p>
           </div>
           <span class="text-slate-400" aria-hidden="true">•••</span>
@@ -78,15 +80,21 @@
         </div>
         <div class="flex items-center gap-2.5 md:gap-4">
           <span class="hidden items-center gap-1.5 rounded-full bg-[#edf9f5] px-3 py-1.5 text-[11px] font-bold text-[#138975] sm:inline-flex">
-            <span class="h-1.5 w-1.5 rounded-full bg-[#14a988]"></span> Entorno de demostración
+            <span class="h-1.5 w-1.5 rounded-full bg-[#14a988]"></span> {{ demoMode() ? 'Entorno de demostración' : 'Sesión JWT activa' }}
           </span>
-          <label class="sr-only" for="demo-role">Seleccionar rol de demostración</label>
-          <select id="demo-role" [value]="role()" (change)="setRole($any($event.target).value)"
-            class="max-w-[118px] rounded-xl border border-[#e1e9ed] bg-white px-2.5 py-2.5 text-xs font-bold text-slate-700 outline-none transition focus:border-[#0b9485] focus:ring-2 focus:ring-teal-100 md:max-w-none md:px-4">
-            <option value="paciente">Paciente</option>
-            <option value="medico">Médico</option>
-            <option value="admin">Administrador</option>
-          </select>
+          @if (demoMode()) {
+            <label class="sr-only" for="demo-role">Seleccionar rol de demostración</label>
+            <select id="demo-role" [value]="role()" (change)="setRole($any($event.target).value)"
+              class="max-w-[118px] rounded-xl border border-[#e1e9ed] bg-white px-2.5 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-[#0b9485] focus:ring-2 focus:ring-teal-100 md:max-w-none md:px-4">
+              <option value="paciente">Paciente</option>
+              <option value="medico">Médico</option>
+              <option value="admin">Administrador</option>
+            </select>
+          } @else {
+            <span class="hidden max-w-48 truncate text-xs font-semibold text-[#0a8275] md:block">{{ auth.user()?.email }}</span>
+            <span class="rounded-xl border border-[#dce9e5] bg-white px-3 py-2 text-xs font-bold text-[#0a8275]">{{ roleLabel() }}</span>
+          }
+          <button type="button" (click)="leaveWorkspace()" class="rounded-xl border border-[#dce9e5] px-3 py-2 text-[11px] font-bold text-slate-600 hover:bg-slate-50">{{ demoMode() ? 'Salir de demo' : 'Cerrar sesión' }}</button>
           <div class="hidden h-10 w-10 items-center justify-center rounded-full bg-[#edf5f2] text-sm font-extrabold text-[#0a7f70] sm:flex" aria-label="Avatar de usuario">
             {{ role() === 'paciente' ? 'CP' : role() === 'medico' ? 'LG' : 'AD' }}
           </div>
@@ -99,7 +107,7 @@
             <span class="h-1.5 w-1.5 rounded-full bg-[#13a68c]"></span>
             Fase 5 · Diseño de interfaz
           </span>
-          <span>Datos ficticios. Aún no hay conexión con la API ni autenticación real.</span>
+          <span>{{ demoMode() ? 'Datos ficticios. El modo demostración no conecta con la API.' : 'Autenticación JWT real; citas, especialistas e historia clínica todavía muestran datos de ejemplo.' }}</span>
         </div>
 
         @if (notice()) {
@@ -114,7 +122,7 @@
             <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <p class="mb-1 text-xs font-bold capitalize tracking-wide text-[#0c9683]">{{ today }}</p>
-                <h2 class="text-[25px] font-extrabold tracking-[-1.2px] text-[#12283e] md:text-[31px]">¡Hola, Carlos! <span aria-hidden="true">👋</span></h2>
+                <h2 class="text-[25px] font-extrabold tracking-[-1.2px] text-[#12283e] md:text-[31px]">{{ demoMode() ? '¡Hola, Carlos!' : '¡Hola!' }} <span aria-hidden="true">👋</span></h2>
                 <p class="mt-1 text-[13px] text-[#7b8b9b]">Nos alegra verte de nuevo. Aquí tienes un resumen de tu salud.</p>
               </div>
               <button type="button" (click)="openBooking()" class="inline-flex h-11 items-center gap-2 rounded-xl bg-[#087d71] px-5 text-xs font-bold text-white shadow-[0_6px_18px_rgba(8,125,113,.2)] transition hover:bg-[#086b62]">
@@ -218,7 +226,7 @@
         } @else if (section() === 'resumen' && role() === 'medico') {
           <section class="page-enter">
             <p class="mb-1 text-xs font-bold capitalize text-[#0b9585]">{{ today }}</p>
-            <h2 class="text-[27px] font-extrabold tracking-[-.8px] text-[#13283b]">Buen día, Dra. Laura <span aria-hidden="true">👋</span></h2>
+            <h2 class="text-[27px] font-extrabold tracking-[-.8px] text-[#13283b]">{{ demoMode() ? 'Buen día, Dra. Laura' : 'Buen día, profesional' }} <span aria-hidden="true">👋</span></h2>
             <p class="mb-7 mt-1 text-[13px] text-slate-500">Este es tu espacio de trabajo clínico de demostración.</p>
             <div class="mb-7 rounded-[22px] bg-gradient-to-r from-[#0c7775] to-[#134c72] p-7 text-white md:p-9">
               <span class="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold">Panel profesional · Demo</span>
@@ -480,9 +488,10 @@
 
         <footer class="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-[#e4eced] pt-5 text-[11px] text-[#9aa8af]">
           <p>© MediConnect Pro · Proyecto de grado Full-Stack</p>
-          <p>Fase 5 · Interfaz con datos de demostración</p>
+          <p>Fase 6 · Sesión JWT real / datos visuales ficticios</p>
         </footer>
       </div>
     </main>
   </div>
 </div>
+}

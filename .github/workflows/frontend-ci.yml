@@ -1,7 +1,7 @@
 name: MediConnect Pro Frontend CI
 on:
   push:
-    branches: [main, 'feature/interfaz-mediconnect']
+    branches: [main, 'feature/**']
   pull_request:
 
 jobs:

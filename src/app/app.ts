@@ -1,5 +1,7 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthService, type UserRole } from './core/auth.service';
+import { AuthPage } from './auth/auth-page';
 
 type Role = 'paciente' | 'medico' | 'admin';
 type Section =
@@ -35,11 +37,27 @@ interface Appointment {
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule],
+  imports: [FormsModule, AuthPage],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
 export class App {
+  readonly auth = inject(AuthService);
+  readonly demoMode = signal(false);
+
+  constructor() {
+    effect(() => {
+      const session = this.auth.user();
+      if (session) {
+        this.demoMode.set(false);
+        this.role.set(this.mapRole(session.role));
+        this.section.set('resumen');
+        this.mobileMenuOpen.set(false);
+        this.notice.set('');
+      }
+    });
+  }
+
   readonly role = signal<Role>('paciente');
   readonly section = signal<Section>('resumen');
   readonly mobileMenuOpen = signal(false);
@@ -113,7 +131,28 @@ export class App {
   readonly upcomingAppointments = computed(() => this.appointments().filter(a => a.status === 'Confirmada'));
   readonly appointmentCount = computed(() => this.upcomingAppointments().length);
 
+  enterDemo(): void {
+    this.demoMode.set(true);
+    this.role.set('paciente');
+    this.section.set('resumen');
+    this.notice.set('');
+  }
+
+  leaveWorkspace(): void {
+    this.auth.logout();
+    this.demoMode.set(false);
+    this.role.set('paciente');
+    this.section.set('resumen');
+    this.notice.set('');
+  }
+
+  private mapRole(role: UserRole): Role {
+    return role === 'ROLE_ADMIN' ? 'admin' : role === 'ROLE_DOCTOR' ? 'medico' : 'paciente';
+  }
+
   setRole(role: Role): void {
+    // Cambiar de rol visualmente solo es posible en modo demostración.
+    if (!this.demoMode()) return;
     this.role.set(role);
     this.section.set('resumen');
     this.mobileMenuOpen.set(false);

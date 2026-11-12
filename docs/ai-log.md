@@ -13,6 +13,13 @@
 - **Evidencia de verificación:** GitHub Actions 'MediConnect Pro Frontend CI' ejecuta npm ci, npm run build y Vitest.
 - **Pendientes:** revisión visual y accesibilidad en dispositivos pequeños, extracción de componentes por funcionalidades, integración JWT en fase 6.
 
+## Registro 003 — Conexión inicial JWT (fase 6)
+- **Objetivo:** permitir registro e inicio de sesión reales desde Angular usando el backend en Docker.
+- **Asistencia:** diseño de un componente de acceso, AuthService, interceptor funcional y proxy de desarrollo Angular/Node hacia Spring Boot.
+- **Decisiones:** token en memoria (sin localStorage); rol interpretado solo para UI, con seguridad del backend; pruebas unitarias HTTP con Vitest; opción demo explícitamente separada.
+- **Validación:** CI de Angular ejecuta build + Vitest. Falta prueba manual de red desde Windows/Docker y evidencia de registro/login real.
+- **Pendientes:** sesiones y expiración, errores de red, integración de catálogos y reservas, autorización y cobertura detallada.
+
 ## Reglas de revisión humana
 1. Revisar cada cambio de IA en GitHub.
 2. Validar builds y pruebas antes de fusionar.
