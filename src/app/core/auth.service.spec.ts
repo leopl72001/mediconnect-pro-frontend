@@ -79,4 +79,79 @@ describe('Autenticación JWT', () => {
     expect(receivedError).toBe(true);
     expect(auth.authenticated()).toBe(false);
   });
+
+  it('rechaza un JWT vencido aunque tenga identidad y rol conocidos', () => {
+    const expired = 'header.' + btoa(JSON.stringify({
+      sub: 'expired@example.test', roles: ['ROLE_PATIENT'], exp: Math.floor(Date.now() / 1000) - 60
+    })) + '.signature';
+    let message = '';
+    auth.login('expired@example.test', 'demo').subscribe({ error: err => message = err.message });
+    httpMock.expectOne('/api/v1/auth/login').flush({ accessToken: expired, tokenType: 'Bearer' });
+    expect(message).toContain('sesión no válida');
+    expect(auth.authenticated()).toBe(false);
+    expect(auth.accessToken()).toBeNull();
+  });
+
+  it('rechaza JWT sin identidad o con rol que no existe en MediConnect', () => {
+    for (const claims of [
+      { roles: ['ROLE_PATIENT'], exp: Math.floor(Date.now() / 1000) + 60 },
+      { sub: 'test@example.test', roles: ['ROLE_SUPERUSER'], exp: Math.floor(Date.now() / 1000) + 60 }
+    ]) {
+      const token = 'header.' + btoa(JSON.stringify(claims)) + '.signature';
+      let failed = false;
+      auth.login('test@example.test', 'demo').subscribe({ error: () => failed = true });
+      httpMock.expectOne('/api/v1/auth/login').flush({ accessToken: token, tokenType: 'Bearer' });
+      expect(failed).toBe(true);
+      expect(auth.authenticated()).toBe(false);
+    }
+  });
+
+  it('selecciona un rol conocido si el JWT también incluye roles desconocidos', () => {
+    const token = 'header.' + btoa(JSON.stringify({
+      sub: 'doctor@example.test',
+      roles: ['ROLE_UNKNOWN', 'ROLE_DOCTOR'],
+      exp: Math.floor(Date.now() / 1000) + 3600
+    })) + '.signature';
+    auth.login('doctor@example.test', 'demo').subscribe();
+    httpMock.expectOne('/api/v1/auth/login').flush({ accessToken: token, tokenType: 'Bearer' });
+    expect(auth.user()?.role).toBe('ROLE_DOCTOR');
+  });
+
+  it('mantiene la sesión cerrada si el servidor devuelve error de credenciales', () => {
+    let status = 0;
+    auth.login('test@example.test', 'bad-password').subscribe({ error: error => status = error.status });
+    httpMock.expectOne('/api/v1/auth/login').flush(
+      { message: 'Credenciales invalidas' }, { status: 401, statusText: 'Unauthorized' }
+    );
+    expect(status).toBe(401);
+    expect(auth.authenticated()).toBe(false);
+    expect(auth.accessToken()).toBeNull();
+  });
+
+  it('no intenta iniciar sesión cuando el registro falla', () => {
+    let status = 0;
+    auth.register({
+      email: 'duplicate@example.test', password: 'Password123!',
+      firstName: 'Ana', lastName: 'Prueba'
+    }).subscribe({ error: error => status = error.status });
+    httpMock.expectOne('/api/v1/auth/register').flush(
+      { message: 'Correo ya registrado' }, { status: 409, statusText: 'Conflict' }
+    );
+    expect(status).toBe(409);
+    httpMock.expectNone('/api/v1/auth/login');
+    expect(auth.authenticated()).toBe(false);
+  });
+
+  it('elimina JWT y usuario tras cerrar una sesión real', () => {
+    auth.login('paciente@example.test', 'demo').subscribe();
+    httpMock.expectOne('/api/v1/auth/login').flush({
+      accessToken: fakeToken('ROLE_PATIENT'), tokenType: 'Bearer'
+    });
+    expect(auth.authenticated()).toBe(true);
+    auth.logout();
+    expect(auth.authenticated()).toBe(false);
+    expect(auth.user()).toBeNull();
+    expect(auth.accessToken()).toBeNull();
+  });
+
 });
