@@ -428,7 +428,21 @@ export class App {
     }).format(new Date(date + 'T12:00:00'));
   }
 
-  getPageTitle(): string {
+  adminView(): 'resumen' | 'profesionales' | 'consultorios' | 'reportes' {
+    const current = this.section();
+    return current === 'profesionales' || current === 'consultorios' || current === 'reportes'
+      ? current : 'resumen';
+  }
+
+  clinicalKind(): 'notas' | 'recetas' {
+    return this.section() === 'recetas' ? 'recetas' : 'notas';
+  }
+
+  clinicalRole(): 'paciente' | 'medico' {
+    return this.role() === 'medico' ? 'medico' : 'paciente';
+  }
+
+    getPageTitle(): string {
     const titles: Record<Section, string> = {
       resumen: 'Resumen', medicos: 'Encuentra especialistas', citas: 'Mis citas',
       reservar: 'Reservar una cita', historia: this.role() === 'medico' ? 'Notas clínicas' : 'Historia clínica',
