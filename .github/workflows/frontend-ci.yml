@@ -21,6 +21,10 @@ jobs:
         run: npm install --no-save --package-lock=false @vitest/coverage-v8@4.1.12
       - name: Pruebas Vitest con cobertura real
         run: npm test -- --watch=false --coverage
+      - name: Mostrar porcentajes reales de Vitest
+        run: node scripts/report-coverage.cjs
+      - name: Construir Docker multi-stage de producción
+        run: docker build -t mediconnect-pro-ui:test .
       - name: Publicar cobertura para el jurado
         if: always()
         uses: actions/upload-artifact@v4
