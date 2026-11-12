@@ -17,5 +17,14 @@ jobs:
         run: npm ci
       - name: Compilar interfaz
         run: npm run build
-      - name: Pruebas Vitest
-        run: npm test -- --watch=false
+      - name: Instalar reporter compatible con Vitest
+        run: npm install --no-save --package-lock=false @vitest/coverage-v8@4.1.12
+      - name: Pruebas Vitest con cobertura real
+        run: npm test -- --watch=false --coverage
+      - name: Publicar cobertura para el jurado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-vitest
+          path: coverage/
+          if-no-files-found: warn
