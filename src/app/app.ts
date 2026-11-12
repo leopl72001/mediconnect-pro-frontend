@@ -11,11 +11,12 @@ import { PatientProfilePage } from './features/profile/patient-profile';
 import { ClinicalPage } from './features/clinical/clinical-page';
 import { AdminPage } from './features/admin/admin-page';
 import { AppointmentNotifications } from './core/appointment-notifications';
+import { PrivateMediaPage } from './features/media/private-media';
 
 type Role = 'paciente' | 'medico' | 'admin';
 type Section =
   | 'resumen' | 'medicos' | 'citas' | 'reservar' | 'historia' | 'recetas'
-  | 'agenda' | 'pacientes' | 'profesionales' | 'consultorios' | 'reportes' | 'perfil';
+  | 'agenda' | 'pacientes' | 'profesionales' | 'consultorios' | 'reportes' | 'perfil' | 'archivos';
 
 interface MenuItem {
   id: Section;
@@ -46,7 +47,7 @@ interface Appointment {
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, AuthPage, PatientProfilePage, ClinicalPage, AdminPage],
+  imports: [FormsModule, AuthPage, PatientProfilePage, ClinicalPage, AdminPage, PrivateMediaPage],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -196,7 +197,9 @@ export class App {
   readonly menu = computed<MenuItem[]>(() => {
     if (this.role() === 'paciente') {
       return this.demoMode() ? this.patientMenu : [
-        ...this.patientMenu, { id: 'perfil', label: 'Mi perfil', icon: '♙' }
+        ...this.patientMenu,
+        { id: 'perfil', label: 'Mi perfil', icon: '♙' },
+        { id: 'archivos', label: 'Mis archivos', icon: '▧' }
       ];
     }
     return this.role() === 'medico' ? this.doctorMenu : this.adminMenu;
@@ -469,7 +472,8 @@ export class App {
       reservar: 'Reservar una cita', historia: this.role() === 'medico' ? 'Notas clínicas' : 'Historia clínica',
       recetas: this.role() === 'medico' ? 'Prescripciones' : 'Mis recetas',
       agenda: 'Mi agenda', pacientes: 'Mis pacientes', profesionales: 'Profesionales',
-      consultorios: 'Consultorios', reportes: 'Reportes', perfil: 'Mi perfil'
+      consultorios: 'Consultorios', reportes: 'Reportes', perfil: 'Mi perfil',
+      archivos: 'Mis archivos privados'
     };
     return titles[this.section()];
   }
