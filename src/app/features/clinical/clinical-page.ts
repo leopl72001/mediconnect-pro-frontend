@@ -1,7 +1,7 @@
 import { Component, DestroyRef, effect, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { finalize } from 'rxjs';
+import { finalize, type Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ClinicalApiService, type ClinicalNoteView, type PrescriptionView } from '../../core/clinical-api.service';
 import type { AppointmentView } from '../../core/appointment-api.service';
@@ -45,9 +45,8 @@ export class ClinicalPage {
     if (this.role() !== 'paciente') return;
     this.loading.set(true);
     this.error.set('');
-    const request = kind === 'notas'
-      ? this.api.patientNotes()
-      : this.api.patientPrescriptions();
+    const request: Observable<ClinicalNoteView[] | PrescriptionView[]> =
+      kind === 'notas' ? this.api.patientNotes() : this.api.patientPrescriptions();
     request.pipe(
       takeUntilDestroyed(this.destroyRef),
       finalize(() => this.loading.set(false))
