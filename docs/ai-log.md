@@ -49,6 +49,14 @@
 - **Deuda técnica:** SSE solo distribuye en una instancia Spring; en cloud multirréplica usar Redis Pub/Sub. No hay notificaciones móviles ni persistencia de eventos históricos.
 - **Evidencia:** [plan de prueba de fase 7](prueba-fase7-sse.md).
 
+## Registro 008 — Archivos privados y resiliencia offline (fase 8)
+- **Objetivo:** procesar imágenes en cliente con Canvas/WebP, guardar imágenes/PDF en backend seguro por cuenta, soportar conexiones intermitentes.
+- **Asistencia IA:** servicio Java Mongo GridFS con validación de magic bytes y propietario JWT; cliente Angular con carga multipart y descarga autenticada; cola IndexedDB con recuperación automática al volver la conexión.
+- **Seguridad y alcance:** máximo 5 MB por carga; el backend ignora la extensión y tipo MIME declarados y verifica la firma; no hay enlaces públicos, se sirve como adjunto, se bloquean accesos cruzados. La cola local no se cifra: se **prohíbe usar documentos clínicos reales** en la demo.
+- **Calidad:** JUnit/Mockito para tipos rechazados, tamaño y acceso ajeno; Vitest para APIs y tipos admitidos; GitHub Actions debe quedar verde antes de fusionar.
+- **Deuda técnica:** para producción se requiere cifrado de cola local, control empresarial de claves, retención, antivirus, auditoría, reglas de eliminación, backend de almacenamiento duradero y estudio normativo aplicable. Modo offline actual **no es PWA instalable**; la sincronización diferida funciona desde una pestaña previamente abierta.
+- **Validación pendiente:** prueba manual de una imagen WebP y cola 1→0 en navegador. [Guía única](prueba-fase8-medios.md).
+
 ## Reglas de revisión humana
 1. Revisar cada cambio de IA en GitHub.
 2. Validar builds y pruebas antes de fusionar.
