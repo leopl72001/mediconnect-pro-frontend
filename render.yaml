@@ -1,10 +1,12 @@
 # Render Blueprint - Angular 21 desde Dockerfile multi-stage.
 # BACKEND_ORIGIN debe apuntar al HTTPS REAL del backend publicado.
+# Usar Free para demostración académica: puede entrar en reposo y tardar en reactivarse.
+# No crear ni desplegar este servicio hasta que el backend esté operativo.
 services:
   - type: web
     name: mediconnect-pro-ui
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: ./Dockerfile
     healthCheckPath: /
     envVars:
