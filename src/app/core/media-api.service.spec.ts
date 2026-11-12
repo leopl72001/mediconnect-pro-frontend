@@ -34,6 +34,13 @@ describe('MediaApiService', () => {
       size: file.size, uploadedAt: '2026-11-12T12:00:00Z' });
   });
 
+  it('codifica identificadores de archivo al construir la URL privada', () => {
+    service.download('id con espacios/otra-ruta').subscribe();
+    const req = http.expectOne('/api/v1/media/me/id%20con%20espacios%2Fotra-ruta');
+    expect(req.request.method).toBe('GET');
+    req.flush(new Blob(['ficticio'], { type: 'application/pdf' }));
+  });
+
   it('descarga el archivo privado como blob', () => {
     service.download('abc').subscribe();
     const req = http.expectOne('/api/v1/media/me/abc');
