@@ -114,7 +114,7 @@
         <div class="mb-7 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500">
           <span class="inline-flex items-center gap-2 rounded-full border border-[#dcece6] bg-white px-3 py-1.5 text-[#168373]">
             <span class="h-1.5 w-1.5 rounded-full bg-[#13a68c]"></span>
-            Fase 7 · Actualización de citas en tiempo real
+            Fase 8 · Archivos WebP y sincronización offline
           </span>
           <span>{{ demoMode() ? 'Datos ficticios. El modo demostración no conecta con la API.' : 'Sesión JWT real; médicos, consultorios, citas y registros clínicos usan Spring Boot. Las citas se sincronizan por SSE.' }}</span>
         </div>
@@ -128,6 +128,8 @@
 
         @if (!demoMode() && role() === 'admin') {
           <app-admin-page [view]="adminView()"></app-admin-page>
+        } @else if (!demoMode() && section() === 'archivos' && role() === 'paciente') {
+          <app-private-media></app-private-media>
         } @else if (!demoMode() && section() === 'perfil' && role() === 'paciente') {
           <app-patient-profile></app-patient-profile>
         } @else if (!demoMode() && (section() === 'historia' || section() === 'recetas') && (role() === 'paciente' || role() === 'medico')) {
