@@ -94,7 +94,7 @@ export class PrivateMediaPage implements OnInit, OnDestroy {
           this.refresh();
         } catch (error) {
           if (error instanceof HttpErrorResponse && error.status === 0) {
-            this.online.set(false);
+            this.online.set(navigator.onLine);
             await this.enqueue(file);
           } else {
             this.error.set(this.uploadError(error));
@@ -131,7 +131,7 @@ export class PrivateMediaPage implements OnInit, OnDestroy {
           success += 1;
         } catch (error) {
           if (error instanceof HttpErrorResponse && error.status === 0) {
-            this.online.set(false);
+            this.online.set(navigator.onLine);
           } else {
             this.error.set(this.uploadError(error) + ' Revisa el archivo pendiente.');
           }
