@@ -4,7 +4,7 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 
 - **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
 - **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
-- **Estado actual:** fase 6 de integración real completada y validada visualmente para pacientes, médicos y administración. **Fase 7 en desarrollo:** notificaciones SSE con JWT que actualizan la agenda de paciente y médico cuando se crea o cancela una cita. Falta la prueba manual simultánea de dos sesiones. Estadísticas avanzadas y modo demostración siguen siendo ilustrativos.
+- **Estado actual:** fase 6 de integración real completada y validada visualmente para pacientes, médicos y administración. **Fase 7 validada:** notificaciones SSE con JWT, con actualización automática de agenda comprobada visualmente. **Fase 8 en desarrollo:** imágenes procesadas en WebP mediante Canvas, archivos privados en MongoDB y cola offline. Falta la prueba manual del módulo de archivos. Estadísticas avanzadas y modo demostración siguen siendo ilustrativos.
 
 ## Funcionalidades visuales implementadas
 
@@ -15,6 +15,7 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 - En sesión JWT de paciente: seleccionar médico, consultorio activo y horario de Colombia; crear la cita en PostgreSQL (`POST /api/v1/appointments`), listar (`GET /api/v1/appointments/me`) y cancelar (`PATCH /api/v1/appointments/{id}/cancel`).
 - En sesión JWT de médico: consultar su agenda con `GET /api/v1/appointments/doctor/me`.
 - **SSE (fase 7):** `GET /api/v1/notifications/stream` con token JWT **en cabecera Authorization** (no en la URL). Estado de conexión en pantalla (`SSE en vivo` / `SSE reconectando`), aviso al crear/cancelar y actualización automática de agenda de paciente y médico. El cliente usa fetch streaming y reintenta la conexión.
+- **Fase 8:** pantalla `Mis archivos` del paciente JWT. JPG/PNG/WebP se convierten y redimensionan a WebP en Canvas (hasta 1600 px); PDF conserva su formato. Subida privada a MongoDB GridFS, descarga autenticada y cola IndexedDB para sincronizar al recuperar conexión.
 - En modo demostración: reserva y cancelación local con **Angular Signals**, sin ninguna solicitud HTTP.
 - Perfil real del paciente: `GET/PUT /api/v1/patients/me` con datos persistidos en PostgreSQL.
 - Médico: guardar notas clínicas en MongoDB mediante `POST /api/v1/appointments/{id}/clinical-notes` y recetas con validación OpenFDA mediante `POST /api/v1/appointments/{id}/prescriptions` sobre sus propias citas.
@@ -46,7 +47,7 @@ Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinad
 
 **Catálogo y reservas reales:** en Especialistas los médicos provienen de `GET /api/v1/doctors`. La base recién creada puede no tener médicos ni consultorios; un ADMIN debe registrarlos usando `/api/v1/admin/doctors` y `/api/v1/admin/offices`. En la reserva, se selecciona un consultorio activo, día y hora **en zona horaria Colombia UTC-5**; la interfaz envía timestamps ISO UTC a Spring Boot. **El sistema no expone disponibilidad anticipada**: la hora seleccionada es una solicitud, no una garantía, y el backend rechaza citas solapadas con HTTP 409. Cancelaciones requieren más de 24 h de anticipación. En pruebas usa fechas futuras y datos ficticios.
 
-**Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. La conexión SSE se cierra al salir y reconecta con JWT en cabecera; las notificaciones no llevan datos clínicos. El backend SSE usa memoria local, no distribución entre múltiples réplicas. Roles en la UI son solo presentacionales; la seguridad depende de Spring Security. Los datos de **especialistas, consultorios, citas, agenda, perfil y clínica** son reales cuando hay sesión JWT. **Historias y recetas** son reales en sesión JWT; el **modo demo y las estadísticas avanzadas** siguen siendo visualizaciones ficticias. No se deben usar datos médicos personales para pruebas.
+**Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. La conexión SSE se cierra al salir y reconecta con JWT en cabecera; las notificaciones no llevan datos clínicos. El backend SSE usa memoria local, no distribución entre múltiples réplicas. Roles en la UI son solo presentacionales; la seguridad depende de Spring Security. Los datos de **especialistas, consultorios, citas, agenda, perfil y clínica** son reales cuando hay sesión JWT. **Historias y recetas** son reales en sesión JWT; el **modo demo y las estadísticas avanzadas** siguen siendo visualizaciones ficticias. No se deben usar datos médicos personales para pruebas. **La cola IndexedDB contiene copias locales sin cifrado: solo archivos ficticios.** El login, la autorización JWT y los nombres de archivos no constituyen cifrado local. Para producción se requiere cifrado en reposo, una política de retención y protección adicional de datos sensibles.
 
 Si usas Node.js directamente en un sistema compatible:
 
@@ -77,10 +78,11 @@ src/styles.scss        Tipografía y estilos base
 src/app/app.spec.ts    Pruebas con Vitest
 src/app/auth/         Formulario real de registro / login
 src/app/core/         JWT, interceptor, clientes de API y SSE con reconexión
-src/app/features/      Páginas reales de perfil, clínica y administración
+src/app/features/      Páginas reales de perfil, clínica, administración y archivos privados
 proxy.conf.json       Proxy local de Angular Docker a Spring Boot
 docs/prueba-integral-fase6.md  Recorrido de fase 6 (validado por capturas)
-docs/prueba-fase7-sse.md      Validación en vivo con dos sesiones simultáneas
+docs/prueba-fase7-sse.md      Validación SSE (comprobada)
+docs/prueba-fase8-medios.md  Recorrido único para WebP, PDF y cola offline
 ```
 
 Los paneles de ejemplo concentran varios flujos en el componente raíz para validarlos visualmente. El registro/login usa un componente independiente y servicios HTTP tipados. Los módulos de perfil, clínica y administración están separados en componentes. Pendiente: completar guards de rutas y extraer el dashboard general en más componentes; mejorar la respuesta al vencimiento del JWT.
@@ -88,8 +90,8 @@ Los paneles de ejemplo concentran varios flujos en el componente raíz para vali
 ### Fases pendientes
 
 - **6 (completada):** JWT, médicos, consultorios, reservas, agenda, perfil, notas clínicas, recetas y administración comprobados mediante flujo funcional en Angular; cobertura formal queda para fase 9.
-- **7 (en curso):** SSE con notificaciones y actualizaciones de agenda implementadas; **pendiente la prueba manual con dos sesiones**. Sigue la [guía de prueba SSE](docs/prueba-fase7-sse.md).
-- **8:** imágenes optimizadas, almacenamiento privado y sincronización offline.
+- **7 (completada):** SSE y actualización de agenda sin recarga verificados visualmente.
+- **8 (en curso):** Canvas/WebP, archivos privados GridFS y sincronización diferida con IndexedDB implementados, pendientes de prueba manual en Docker. [Guía de prueba fase 8](docs/prueba-fase8-medios.md).
 - **9:** Vitest y Cypress, 80% de cobertura y pirámide de pruebas.
 - **10:** Docker multi-stage, SonarCloud, CI/CD y URL pública.
 
