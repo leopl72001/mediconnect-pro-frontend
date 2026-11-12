@@ -1,0 +1,97 @@
+<main class="flex min-h-screen flex-col bg-[#f5f9fa] lg:flex-row">
+  <section class="relative flex min-h-[230px] w-full flex-col justify-between overflow-hidden bg-gradient-to-br from-[#076f67] via-[#087c76] to-[#133a5f] px-7 py-8 text-white sm:px-12 lg:min-h-screen lg:w-[51%] lg:px-16 lg:py-12">
+    <div class="soft-dot-grid absolute inset-0 opacity-40"></div>
+    <div class="pointer-events-none absolute -right-24 top-1/4 h-80 w-80 rounded-full border-[55px] border-white/[.06]"></div>
+    <div class="relative flex items-center gap-3">
+      <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/95 text-[#078076]">
+        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8c4.2 7.3 7.4 10 8.9 11 1.5-1 4.7-3.7 8.8-8.5a5.5 5.5 0 0 0 0-7.9Z"/>
+          <path d="M3.5 12h4l2-3.5 3 7 2-3.5h6"/>
+        </svg>
+      </span>
+      <div>
+        <strong class="block font-[Manrope] text-[19px] font-extrabold tracking-tight">MediConnect<span class="text-[#9ff1da]">.</span></strong>
+        <span class="text-[10px] font-extrabold uppercase tracking-[2.8px] text-[#c5f3e7]">Pro Health</span>
+      </div>
+    </div>
+
+    <div class="relative my-8 max-w-xl lg:my-20">
+      <span class="mb-5 inline-flex rounded-full border border-white/25 bg-white/10 px-4 py-2 text-xs font-bold">
+        ✦ Proyecto de grado · Full-Stack
+      </span>
+      <h1 class="font-[Manrope] text-[32px] font-extrabold leading-[1.2] tracking-[-1.5px] sm:text-[46px] lg:text-[54px]">
+        Tu salud, <span class="text-[#a2f5dc]">más conectada.</span>
+      </h1>
+      <p class="mt-5 max-w-[440px] text-[14px] leading-7 text-[#d5f0ed]">
+        Una experiencia de atención médica más humana. Accede a tu cuenta o regístrate para comenzar.
+      </p>
+      <div class="mt-8 grid max-w-[410px] grid-cols-2 gap-3">
+        <div class="rounded-xl border border-white/15 bg-white/10 p-4">
+          <span class="block text-2xl" aria-hidden="true">♡</span>
+          <strong class="mt-2 block text-xs">Atención cercana</strong>
+        </div>
+        <div class="rounded-xl border border-white/15 bg-white/10 p-4">
+          <span class="block text-2xl" aria-hidden="true">▦</span>
+          <strong class="mt-2 block text-xs">Citas organizadas</strong>
+        </div>
+      </div>
+    </div>
+    <p class="relative text-[11px] text-[#c6e9e7]">© MediConnect Pro · Interfaz Angular 21 + Backend Spring Boot 4</p>
+  </section>
+
+  <section class="flex flex-1 items-center justify-center px-6 py-12 sm:px-12">
+    <div class="w-full max-w-[420px]">
+      <div class="mb-7">
+        <span class="mb-3 inline-flex items-center gap-2 rounded-full bg-[#e7f7f0] px-3 py-1.5 text-[11px] font-bold text-[#0b897b]"><span class="h-2 w-2 rounded-full bg-[#16a68e]"></span> Acceso conectado a Spring Boot</span>
+        <h2 class="text-[29px] font-extrabold tracking-[-1px] text-[#142c3e]">{{ mode() === 'login' ? '¡Bienvenido de nuevo!' : 'Crea tu cuenta' }}</h2>
+        <p class="mt-2 text-sm leading-6 text-slate-500">{{ mode() === 'login' ? 'Ingresa tus credenciales para acceder a MediConnect Pro.' : 'Regístrate como paciente para comenzar a utilizar la plataforma.' }}</p>
+      </div>
+
+      <div class="mb-6 grid grid-cols-2 rounded-xl bg-[#eaf0f1] p-1" role="group" aria-label="Tipo de acceso">
+        <button type="button" (click)="selectMode('login')" class="rounded-lg py-2.5 text-xs font-bold transition" [class.bg-white]="mode() === 'login'" [class.text-[#087c72]]="mode() === 'login'" [class.shadow-sm]="mode() === 'login'">Iniciar sesión</button>
+        <button type="button" (click)="selectMode('register')" class="rounded-lg py-2.5 text-xs font-bold transition" [class.bg-white]="mode() === 'register'" [class.text-[#087c72]]="mode() === 'register'" [class.shadow-sm]="mode() === 'register'">Registrarse</button>
+      </div>
+
+      <form (ngSubmit)="submit()" class="space-y-4">
+        @if (mode() === 'register') {
+          <div class="grid grid-cols-2 gap-3">
+            <label class="block text-xs font-bold text-slate-700">Nombre
+              <input type="text" name="firstName" [(ngModel)]="firstName" required autocomplete="given-name"
+                class="mt-2 w-full rounded-xl border border-[#dce6e9] bg-white px-4 py-3 text-sm font-normal outline-none focus:border-[#0a8477] focus:ring-2 focus:ring-teal-100" placeholder="Tu nombre"/>
+            </label>
+            <label class="block text-xs font-bold text-slate-700">Apellido
+              <input type="text" name="lastName" [(ngModel)]="lastName" required autocomplete="family-name"
+                class="mt-2 w-full rounded-xl border border-[#dce6e9] bg-white px-4 py-3 text-sm font-normal outline-none focus:border-[#0a8477] focus:ring-2 focus:ring-teal-100" placeholder="Tu apellido"/>
+            </label>
+          </div>
+        }
+        <label class="block text-xs font-bold text-slate-700">Correo electrónico
+          <input type="email" name="email" [(ngModel)]="email" required autocomplete="email" placeholder="nombre@ejemplo.com"
+            class="mt-2 w-full rounded-xl border border-[#dce6e9] bg-white px-4 py-3 text-sm font-normal outline-none focus:border-[#0a8477] focus:ring-2 focus:ring-teal-100"/>
+        </label>
+        <label class="block text-xs font-bold text-slate-700">Contraseña
+          <input type="password" name="password" [(ngModel)]="password" required [minlength]="mode() === 'register' ? 8 : 1"
+            [autocomplete]="mode() === 'register' ? 'new-password' : 'current-password'"
+            class="mt-2 w-full rounded-xl border border-[#dce6e9] bg-white px-4 py-3 text-sm font-normal outline-none focus:border-[#0a8477] focus:ring-2 focus:ring-teal-100"
+            [placeholder]="mode() === 'register' ? 'Mínimo 8 caracteres' : 'Tu contraseña'"/>
+        </label>
+
+        @if (errorMessage()) {
+          <p role="alert" class="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs font-medium leading-5 text-red-600">{{ errorMessage() }}</p>
+        }
+
+        <button type="submit" [disabled]="busy()" class="mt-1 w-full rounded-xl bg-[#087c71] px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_22px_rgba(6,110,99,.15)] transition hover:bg-[#086d64] disabled:cursor-not-allowed disabled:opacity-60">
+          {{ busy() ? 'Conectando…' : mode() === 'login' ? 'Ingresar a MediConnect →' : 'Crear cuenta y acceder →' }}
+        </button>
+      </form>
+
+      <div class="my-7 flex items-center gap-3 text-[11px] text-slate-400"><span class="h-px flex-1 bg-slate-200"></span> o <span class="h-px flex-1 bg-slate-200"></span></div>
+      <button type="button" (click)="enterDemo.emit()" class="w-full rounded-xl border border-[#cfe6e0] bg-[#f4faf7] px-4 py-3 text-xs font-bold text-[#0a8275] hover:bg-[#eaf7f1]">
+        Explorar interfaz con datos ficticios
+      </button>
+      <p class="mt-4 text-center text-[11px] leading-5 text-slate-400">
+        El modo demostración no autentica usuarios ni guarda citas. El acceso real utiliza JWT y las bases de datos del backend.
+      </p>
+    </div>
+  </section>
+</main>
