@@ -33,6 +33,14 @@
 - **Alcance honesto:** la interfaz no afirma disponibilidad anticipada; la única confirmación es la respuesta de creación del servidor. Datos médicos, recetas y paneles secundarios aún son demostrativos.
 - **Evidencia:** CI ejecuta build y Vitest, incluyendo pruebas unitarias de los endpoints. Falta prueba E2E manual desde Docker con consultorio real.
 
+## Registro 006 — Integración integral de la fase 6
+- **Objetivo:** completar en un solo lote las pantallas de perfil, notas clínicas, recetas y gestión administrativa con la API Spring Boot.
+- **Asistencia:** servicios HTTP tipados de paciente, administración y clínica; formularios separados por rol y estados de carga/error, pruebas HTTP con Vitest.
+- **Permisos:** paciente consulta sus documentos y edita su perfil; médico escribe nota y receta únicamente en sus citas; administrador crea profesionales y consultorios. Autorización aplicada por Spring Security, no por los elementos visuales.
+- **Persistencia:** PostgreSQL para citas, perfiles, médicos, consultorios y recetas; MongoDB para notas. OpenFDA valida el nombre del medicamento con estado externo.
+- **Verificación:** build y tests unitarios por GitHub Actions. Recorrido manual completo aún pendiente: [guía](prueba-integral-fase6.md).
+- **Limitaciones:** no existen estadísticas avanzadas, disponibilidad anticipada ni identidad de pacientes en la API de agenda; no inventar esos datos. Aún faltan SSE, medios, offline, cobertura y Cypress, CD/despliegue.
+
 ## Reglas de revisión humana
 1. Revisar cada cambio de IA en GitHub.
 2. Validar builds y pruebas antes de fusionar.
