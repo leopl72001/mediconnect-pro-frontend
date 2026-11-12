@@ -56,6 +56,16 @@ npm ci
 npm start
 ```
 
+## Calidad, CI/CD y defensa (Capstone)
+
+- **Vitest cobertura:** `npm test -- --watch=false --coverage`; ver `coverage/index.html`, y `node scripts/report-coverage.cjs` para leer porcentajes. Última medición real: **31.12 % líneas / 28.35 % ramas**. Faltan pruebas hasta el 80 %.
+- **Cypress:** tres recorridos de navegador reales, `cypress/e2e/capstone-critical.cy.js`. GitHub Actions inicia PostgreSQL/MongoDB/Redis y Angular para ejecutarlos; ver el run antes de declararlos aprobados.
+- **Docker multi-stage:** `docker build -t mediconnect-pro-ui .` compila Angular 21 y sirve archivos estáticos con Nginx; el proxy mantiene JWT y SSE en el mismo origen.
+- **Cloud:** `render.yaml` prepara la interfaz; `BACKEND_ORIGIN` debe contener la URL real del backend en Render. Los secretos y activación requieren cuenta conectada y aprobación del titular. [Guía backend](https://github.com/leopl72001/mediconnect-pro-backend/blob/main/docs/DEPLOY-CLOUD.md).
+- **CD:** workflows `publish-cloud.yml` publican a GHCR y activan Render cuando se configura `RENDER_DEPLOY_HOOK_URL`. Publicar contenedor no crea URL pública.
+- **Defensa de 15 minutos:** [guion completo y fluido](docs/DEFENSA-CAPSTONE-15MIN.md). [Bitácora IA](docs/ai-log.md).
+- **Importante:** el 80 % de cobertura, SonarCloud y la URL pública **están pendientes de cumplir/verificar**, no deben presentarse como aprobados.
+
 ## Compilación y pruebas
 
 Con Docker en marcha, en otra terminal PowerShell:
@@ -92,8 +102,8 @@ Los paneles de ejemplo concentran varios flujos en el componente raíz para vali
 - **6 (completada):** JWT, médicos, consultorios, reservas, agenda, perfil, notas clínicas, recetas y administración comprobados mediante flujo funcional en Angular; cobertura formal queda para fase 9.
 - **7 (completada):** SSE y actualización de agenda sin recarga verificados visualmente.
 - **8 (en curso):** Canvas/WebP, archivos privados GridFS y sincronización diferida con IndexedDB implementados, pendientes de prueba manual en Docker. [Guía de prueba fase 8](docs/prueba-fase8-medios.md).
-- **9:** Vitest y Cypress, 80% de cobertura y pirámide de pruebas.
-- **10:** Docker multi-stage, SonarCloud, CI/CD y URL pública.
+- **9 (en desarrollo):** JaCoCo, Vitest y Testcontainers operativos. Cypress 3 flujos incorporados, a la espera del resultado verde. Cobertura 80 % pendiente.
+- **10 (preparada):** Docker multi-stage, GHCR y Render definidos, SonarCloud configurable. Pendientes URL pública real, secretos, confirmación de costes y dashboards.
 
 ### Gobernanza de IA
 
