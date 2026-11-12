@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+.angular
+.git
+.github
+cypress/videos
+cypress/screenshots
+*.log
+.env
+.env.*
+!.env.example
+README.md
+docs
