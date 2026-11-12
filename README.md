@@ -4,12 +4,13 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 
 - **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
 - **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
-- **Estado actual:** fase 5, UI responsiva de demostración. **Los datos y acciones del frontend todavía son locales y ficticios.** La autenticación, persistencia y conexión real al backend pertenecen a la fase 6.
+- **Estado actual:** fase 6 en curso. El acceso de usuarios (registro y login) está conectado al backend real con JWT; las vistas de especialistas, citas e historia clínica todavía muestran **datos ficticios**, y sus acciones no persisten en la API.
 
 ## Funcionalidades visuales implementadas
 
 - Panel responsivo con barra lateral y menú móvil.
-- Selector de rol **Paciente / Médico / Administrador** para visualizar diseños distintos; **no es autenticación real**.
+- Acceso real con correo y contraseña, registro de pacientes y roles obtenidos del JWT emitido por Spring Boot.
+- Modo demostración separado con selector de roles **Paciente / Médico / Administrador**; no concede permisos de backend.
 - Vista de especialistas con buscador y filtros por especialidad.
 - Flujo de reserva y cancelación local con **Angular Signals**. La operación **no envía solicitudes HTTP**.
 - Panel clínico, notas, prescripciones, consultorios y estadísticas **ilustrativos**.
@@ -21,17 +22,23 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 
 ## Ejecutar en Windows con Docker
 
-En PowerShell, desde la carpeta `mediconnect-pro-frontend`:
+En PowerShell, desde la carpeta `mediconnect-pro-frontend`. Primero enciende el backend con `docker compose up -d` en `mediconnect-pro-backend` y verifica `http://127.0.0.1:8082/actuator/health`:
 
 ```powershell
-docker run --rm -it -p 4200:4200 `
+docker run --rm -it --name mediconnect-pro-angular -p 127.0.0.1:4200:4200 `
   --mount "type=bind,source=$((Get-Location).Path),target=/app" `
   --mount "type=volume,source=mediconnect-pro-node-modules,target=/app/node_modules" `
   -w /app node:24-bookworm `
-  sh -lc "npm ci && npm start -- --host 0.0.0.0"
+  sh -lc "npm ci && npm start -- --host 0.0.0.0 --poll 2000"
 ```
 
 Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinado **solo al desarrollo local**.
+
+**Cómo probar JWT:** abre la aplicación, selecciona `Registrarse`, introduce datos ficticios y una contraseña de al menos 8 caracteres. El frontend llama a `POST /api/v1/auth/register` y luego `POST /api/v1/auth/login`; el token se mantiene en memoria hasta cerrar sesión o recargar. Un interceptor añade `Authorization: Bearer …` a solicitudes protegidas. El backend valida firma y permisos.
+
+**Conexión de desarrollo:** `angular.json` usa `proxy.conf.json` para enviar `/api` desde el contenedor Angular hacia `http://host.docker.internal:8082`. Requiere Docker Desktop y el backend corriendo en el host. En el despliegue cloud se configurará un reverse proxy apropiado: esta URL es solo de desarrollo.
+
+**Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. El panel muestra únicamente **contenido de demostración** aunque el usuario haya iniciado sesión realmente. Roles en UI son solo presentacionales; la seguridad depende de Spring Security.
 
 Si usas Node.js directamente en un sistema compatible:
 
@@ -60,13 +67,16 @@ src/app/app.scss       Transiciones discretas
 src/tailwind.css       Tailwind CSS 4
 src/styles.scss        Tipografía y estilos base
 src/app/app.spec.ts    Pruebas con Vitest
+src/app/auth/         Formulario real de registro / login
+src/app/core/         Servicio de JWT e interceptor HTTP
+proxy.conf.json       Proxy local de Angular Docker a Spring Boot
 ```
 
-La interfaz de demostración concentra varios flujos en el componente raíz para validarlos visualmente. **Antes de integrar la API**, se extraerán componentes por dominio, servicios tipados, guards e interceptor JWT.
+Los paneles de ejemplo concentran varios flujos en el componente raíz para validarlos visualmente. El registro/login usa un componente independiente y servicios HTTP tipados. Antes de conectar las citas, se extraerán componentes por dominio, guards y servicios adicionales.
 
 ### Fases pendientes
 
-- **6:** conectar formularios y datos reales con Spring Boot, JWT y validación por rol.
+- **6 (en curso):** registro/login real con JWT realizado. Pendiente: perfiles, especialistas, reservas y agendas reales con autorización por rol.
 - **7:** SSE/WebSockets y actualizaciones en tiempo real.
 - **8:** imágenes optimizadas, almacenamiento privado y sincronización offline.
 - **9:** Vitest y Cypress, 80% de cobertura y pirámide de pruebas.
