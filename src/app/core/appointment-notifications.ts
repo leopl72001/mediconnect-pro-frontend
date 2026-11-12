@@ -97,8 +97,10 @@ export class AppointmentNotifications {
     } catch {
       // Network errors lead to a bounded delay before reconnecting.
     } finally {
-      if (this.controller === controller) this.controller = null;
-      this.connected.set(false);
+      if (this.controller === controller) {
+        this.controller = null;
+        this.connected.set(false);
+      }
       if (this.token === token && !controller.signal.aborted) {
         this.retry = setTimeout(() => {
           this.retry = null;
