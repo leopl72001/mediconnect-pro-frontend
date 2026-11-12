@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, computed, inject, input, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize, forkJoin } from 'rxjs';
@@ -18,6 +18,7 @@ export class AdminPage implements OnInit {
   readonly view = input.required<'resumen' | 'profesionales' | 'consultorios' | 'reportes'>();
   readonly doctors = signal<DoctorView[]>([]);
   readonly offices = signal<OfficeView[]>([]);
+  readonly activeOfficesCount = computed(() => this.offices().filter(o => o.active).length);
   readonly specialties = signal<SpecialtyView[]>([]);
   readonly loading = signal(true);
   readonly busy = signal(false);
