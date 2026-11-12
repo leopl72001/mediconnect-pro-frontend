@@ -4,7 +4,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
 import { AuthService, type UserRole } from './core/auth.service';
 import { AuthPage } from './auth/auth-page';
-import { CatalogService, type DoctorView } from './core/catalog.service';
+import { CatalogService, type DoctorView, type OfficeView } from './core/catalog.service';
+import { AppointmentApiService, type AppointmentView } from './core/appointment-api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 type Role = 'paciente' | 'medico' | 'admin';
 type Section =
@@ -47,11 +49,34 @@ interface Appointment {
 export class App {
   readonly auth = inject(AuthService);
   private readonly catalog = inject(CatalogService);
+  private readonly appointmentApi = inject(AppointmentApiService);
   private readonly destroyRef = inject(DestroyRef);
   readonly demoMode = signal(false);
   readonly realDoctors = signal<DoctorView[]>([]);
   readonly catalogLoading = signal(false);
   readonly catalogError = signal('');
+  readonly realOffices = signal<OfficeView[]>([]);
+  readonly officesLoading = signal(false);
+  readonly officesError = signal('');
+  readonly bookingOfficeId = signal('');
+  readonly realAppointments = signal<AppointmentView[]>([]);
+  readonly appointmentsLoading = signal(false);
+  readonly appointmentsError = signal('');
+  readonly appointmentBusy = signal(false);
+  readonly appointmentError = signal('');
+  readonly realSelectedDoctor = computed(() =>
+    this.realDoctors().find(doctor => doctor.id === this.bookingDoctorId()) ?? null
+  );
+  readonly realSelectedOffice = computed(() =>
+    this.realOffices().find(office => office.id === this.bookingOfficeId()) ?? null
+  );
+  readonly realUpcomingAppointments = computed(() => this.realAppointments().filter(a =>
+    a.status === 'SCHEDULED' && new Date(a.startTime).getTime() > Date.now()
+  ));
+  readonly selectedRealDoctorName = computed(() => {
+    const doctor = this.realSelectedDoctor();
+    return doctor ? `${doctor.firstName} ${doctor.lastName}` : 'Sin seleccionar';
+  });
   readonly realFilteredDoctors = computed(() => {
     const query = this.search().trim().toLocaleLowerCase('es');
     const specialty = this.specialty();
@@ -77,9 +102,13 @@ export class App {
         this.mobileMenuOpen.set(false);
         this.notice.set('');
         this.loadRealDoctors();
+        this.loadOffices();
+        this.loadRealAppointments();
       } else {
         this.realDoctors.set([]);
         this.catalogError.set('');
+        this.realOffices.set([]);
+        this.realAppointments.set([]);
       }
     });
   }
@@ -168,7 +197,11 @@ export class App {
   leaveWorkspace(): void {
     this.auth.logout();
     this.realDoctors.set([]);
+    this.realOffices.set([]);
+    this.realAppointments.set([]);
     this.catalogError.set('');
+    this.officesError.set('');
+    this.appointmentsError.set('');
     this.demoMode.set(false);
     this.role.set('paciente');
     this.section.set('resumen');
@@ -207,7 +240,128 @@ export class App {
       });
   }
 
-  goTo(section: Section): void {
+  loadOffices(): void {
+    if (!this.auth.authenticated() || this.demoMode()) return;
+    this.officesLoading.set(true);
+    this.officesError.set('');
+    this.catalog.offices().pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.officesLoading.set(false))
+    ).subscribe({
+      next: offices => {
+        if (!this.auth.authenticated()) return;
+        const active = offices.filter(office => office.active);
+        this.realOffices.set(active);
+        if (!active.some(office => office.id === this.bookingOfficeId())) {
+          this.bookingOfficeId.set(active[0]?.id ?? '');
+        }
+      },
+      error: () => this.officesError.set('No pudimos obtener los consultorios. Reintenta la consulta.')
+    });
+  }
+
+  loadRealAppointments(): void {
+    if (!this.auth.authenticated() || this.demoMode() || this.role() === 'admin') return;
+    this.appointmentsLoading.set(true);
+    this.appointmentsError.set('');
+    const request = this.role() === 'medico'
+      ? this.appointmentApi.doctorSchedule()
+      : this.appointmentApi.mine();
+    request.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.appointmentsLoading.set(false))
+    ).subscribe({
+      next: appointments => {
+        if (this.auth.authenticated()) this.realAppointments.set(appointments);
+      },
+      error: () => this.appointmentsError.set('No se pudo consultar la agenda. Verifica tu sesión y la API.')
+    });
+  }
+
+  realAppointmentDoctor(appointment: AppointmentView): string {
+    const doctor = this.realDoctors().find(d => d.id === appointment.doctorId);
+    return doctor ? `${doctor.firstName} ${doctor.lastName}` : 'Profesional registrado';
+  }
+
+  realAppointmentOffice(appointment: AppointmentView): string {
+    const office = this.realOffices().find(o => o.id === appointment.officeId);
+    return office?.name ?? 'Consultorio';
+  }
+
+  realAppointmentDate(iso: string): string {
+    return new Intl.DateTimeFormat('es-CO', {
+      dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Bogota'
+    }).format(new Date(iso));
+  }
+
+  cancelRealAppointment(appointment: AppointmentView): void {
+    if (this.demoMode() || this.role() !== 'paciente' ||
+        appointment.status !== 'SCHEDULED' || this.appointmentBusy()) return;
+    if (new Date(appointment.startTime).getTime() - Date.now() <= 86400000) {
+      this.notice.set('El backend solo permite cancelar con más de 24 horas de anticipación.');
+      return;
+    }
+    this.appointmentBusy.set(true);
+    this.appointmentApi.cancel(appointment.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.appointmentBusy.set(false))
+    ).subscribe({
+      next: result => {
+        this.realAppointments.update(items => items.map(a => a.id === result.id ? result : a));
+        this.notice.set('Cita real cancelada correctamente en Spring Boot.');
+      },
+      error: (error: HttpErrorResponse) =>
+        this.notice.set(error.status === 400
+          ? 'No se puede cancelar esta cita: revisa la política de 24 horas.'
+          : 'No pudimos cancelar la cita. Actualiza el listado e inténtalo de nuevo.')
+    });
+  }
+
+  confirmRealBooking(): void {
+    if (this.demoMode() || this.role() !== 'paciente' || this.appointmentBusy()) return;
+    this.appointmentError.set('');
+    const doctorId = this.bookingDoctorId();
+    const officeId = this.bookingOfficeId();
+    const date = this.bookingDate();
+    const time = this.bookingTime();
+    if (!this.realDoctors().some(d => d.id === doctorId) ||
+        !this.realOffices().some(o => o.id === officeId) || !date || !time) {
+      this.appointmentError.set('Selecciona un profesional, un consultorio activo, fecha y hora.');
+      return;
+    }
+    // La plataforma atiende en Colombia: los horarios de formulario son UTC-05:00.
+    const start = new Date(`${date}T${time}:00-05:00`);
+    if (Number.isNaN(start.getTime()) || start.getTime() <= Date.now()) {
+      this.appointmentError.set('Selecciona una fecha y hora futuras, en horario de Colombia.');
+      return;
+    }
+    const end = new Date(start.getTime() + 30 * 60000);
+    this.appointmentBusy.set(true);
+    this.appointmentApi.create({
+      doctorId, officeId, startTime: start.toISOString(), endTime: end.toISOString()
+    }).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => this.appointmentBusy.set(false))
+    ).subscribe({
+      next: appointment => {
+        this.realAppointments.update(items => [appointment, ...items]);
+        this.goTo('citas');
+        this.notice.set('¡Cita real registrada correctamente en PostgreSQL!');
+        this.loadRealAppointments();
+      },
+      error: (error: HttpErrorResponse) => {
+        this.appointmentError.set(error.status === 409
+          ? 'El médico ya tiene una cita en ese horario. Selecciona otra hora.'
+          : error.status === 400
+            ? 'La fecha o el consultorio no son válidos. Revisa los datos.'
+            : error.status === 401 || error.status === 403
+              ? 'Tu sesión no permite reservar citas. Inicia sesión como paciente.'
+              : 'No pudimos registrar la cita. Comprueba la conexión con Spring Boot.');
+      }
+    });
+  }
+
+    goTo(section: Section): void {
     this.section.set(section);
     this.mobileMenuOpen.set(false);
     this.notice.set('');
@@ -215,8 +369,20 @@ export class App {
 
   openBooking(doctorId = 'laura'): void {
     if (!this.demoMode()) {
-      this.goTo('medicos');
-      this.notice.set('El catálogo de médicos ya es real. La reserva de citas reales es el próximo paso.');
+      if (this.role() !== 'paciente') {
+        this.notice.set('Solo los pacientes pueden solicitar nuevas citas.');
+        return;
+      }
+      const selected = this.realDoctors().find(d => d.id === doctorId) ?? this.realDoctors()[0];
+      if (!selected) {
+        this.goTo('medicos');
+        this.notice.set('No hay médicos registrados para realizar la reserva.');
+        return;
+      }
+      this.bookingDoctorId.set(selected.id);
+      if (!this.realOffices().length) this.loadOffices();
+      this.appointmentError.set('');
+      this.goTo('reservar');
       return;
     }
     this.bookingDoctorId.set(doctorId);

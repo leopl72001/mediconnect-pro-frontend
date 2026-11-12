@@ -4,7 +4,7 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 
 - **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
 - **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
-- **Estado actual:** fase 6 en curso. Registro e inicio de sesión conectados al backend real con JWT; el **catálogo de médicos** se consulta en la API real (`GET /api/v1/doctors`). Las citas y la historia clínica todavía muestran **datos ficticios** y no persisten en el backend.
+- **Estado actual:** fase 6 en curso. Registro e inicio de sesión JWT, catálogo de médicos y consultorios reales, **reserva de citas en PostgreSQL**, listado y cancelación conectados a Spring Boot. El historial clínico y las estadísticas siguen siendo ilustrativos. La prueba manual de reserva desde Angular está pendiente.
 
 ## Funcionalidades visuales implementadas
 
@@ -12,7 +12,9 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 - Acceso real con correo y contraseña, registro de pacientes y roles obtenidos del JWT emitido por Spring Boot.
 - Modo demostración separado con selector de roles **Paciente / Médico / Administrador**; no concede permisos de backend.
 - Vista de especialistas con buscador y filtros por especialidad. En sesión JWT real, muestra el catálogo del backend; sin login, el modo demostración usa médicos ficticios.
-- Flujo de reserva y cancelación local con **Angular Signals**. La operación **no envía solicitudes HTTP**.
+- En sesión JWT de paciente: seleccionar médico, consultorio activo y horario de Colombia; crear la cita en PostgreSQL (`POST /api/v1/appointments`), listar (`GET /api/v1/appointments/me`) y cancelar (`PATCH /api/v1/appointments/{id}/cancel`).
+- En sesión JWT de médico: consultar su agenda con `GET /api/v1/appointments/doctor/me`.
+- En modo demostración: reserva y cancelación local con **Angular Signals**, sin ninguna solicitud HTTP.
 - Panel clínico, notas, prescripciones, consultorios y estadísticas **ilustrativos**.
 - Interfaz completamente en español; etiquetas visibles que distinguen la demostración de datos reales.
 
@@ -38,9 +40,9 @@ Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinad
 
 **Conexión de desarrollo:** `angular.json` usa `proxy.conf.json` para enviar `/api` desde el contenedor Angular hacia `http://app:8081`. Requiere Docker Desktop y que los contenedores del backend estén corriendo en la red `mediconnect-pro_default`. Así el proxy accede directamente al servicio `app` de Compose por su puerto interno 8081. En el despliegue cloud se configurará un reverse proxy apropiado: esta URL es solo de desarrollo.
 
-**Catálogo real:** si la sección Especialistas está vacía después de autenticarte, comprueba `GET http://127.0.0.1:8082/api/v1/doctors`. Una base nueva no tiene médicos hasta que un ADMIN crea los registros. La API no proporciona calificaciones, horarios ni disponibilidad: la interfaz no inventa esos datos. Las reservas reales siguen pendientes de integrar.
+**Catálogo y reservas reales:** en Especialistas los médicos provienen de `GET /api/v1/doctors`. La base recién creada puede no tener médicos ni consultorios; un ADMIN debe registrarlos usando `/api/v1/admin/doctors` y `/api/v1/admin/offices`. En la reserva, se selecciona un consultorio activo, día y hora **en zona horaria Colombia UTC-5**; la interfaz envía timestamps ISO UTC a Spring Boot. **El sistema no expone disponibilidad anticipada**: la hora seleccionada es una solicitud, no una garantía, y el backend rechaza citas solapadas con HTTP 409. Cancelaciones requieren más de 24 h de anticipación. En pruebas usa fechas futuras y datos ficticios.
 
-**Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. El panel muestra únicamente **contenido de demostración** aunque el usuario haya iniciado sesión realmente. Roles en UI son solo presentacionales; la seguridad depende de Spring Security.
+**Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. Roles en la UI son solo presentacionales; la seguridad depende de Spring Security. Los datos de **especialistas, consultorios, citas y agenda** son reales cuando hay sesión JWT. **Historia clínica, recetas, estadísticas y el modo demo** siguen siendo visualizaciones ficticias.
 
 Si usas Node.js directamente en un sistema compatible:
 
@@ -70,15 +72,15 @@ src/tailwind.css       Tailwind CSS 4
 src/styles.scss        Tipografía y estilos base
 src/app/app.spec.ts    Pruebas con Vitest
 src/app/auth/         Formulario real de registro / login
-src/app/core/         JWT, interceptor HTTP y cliente tipado de catálogos
+src/app/core/         JWT, interceptor, catálogos y servicios de citas
 proxy.conf.json       Proxy local de Angular Docker a Spring Boot
 ```
 
-Los paneles de ejemplo concentran varios flujos en el componente raíz para validarlos visualmente. El registro/login usa un componente independiente y servicios HTTP tipados. Antes de conectar las citas, se extraerán componentes por dominio, guards y servicios adicionales.
+Los paneles de ejemplo concentran varios flujos en el componente raíz para validarlos visualmente. El registro/login usa un componente independiente y servicios HTTP tipados. Pendiente: extraer componentes por dominio, agregar guards de rutas y mejorar los flujos administrativos y clínicos reales.
 
 ### Fases pendientes
 
-- **6 (en curso):** registro/login real con JWT y catálogo de médicos real integrados. Pendiente: verificar manualmente el catálogo y conectar oficinas, reservas, historial y agendas con autorización por rol.
+- **6 (en curso):** JWT, médicos y consultorios, reserva/listado/cancelación y agenda del médico programados con pruebas de compilación. Pendiente verificación manual completa y conexión de vistas administrativas y clínicas reales.
 - **7:** SSE/WebSockets y actualizaciones en tiempo real.
 - **8:** imágenes optimizadas, almacenamiento privado y sincronización offline.
 - **9:** Vitest y Cypress, 80% de cobertura y pirámide de pruebas.
