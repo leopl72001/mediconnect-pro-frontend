@@ -20,6 +20,12 @@
 - **Validación:** CI de Angular ejecuta build + Vitest. Falta prueba manual de red desde Windows/Docker y evidencia de registro/login real.
 - **Pendientes:** sesiones y expiración, errores de red, integración de catálogos y reservas, autorización y cobertura detallada.
 
+## Registro 004 — Catálogo de médicos conectado (fase 6)
+- **Objetivo:** consultar profesionales reales y evitar que un paciente autenticado vea perfiles de médicos inventados como si fueran registros de producción.
+- **Asistencia:** servicio HTTP tipado para catálogos, estado Signals, filtros, estados de carga y error, pruebas Vitest.
+- **Limitaciones:** Spring Boot no devuelve calificaciones ni disponibilidad; no mostrarlas como datos reales. Todavía no se realizan reservas o cancelaciones desde el frontend autenticado.
+- **Validación:** CI de Angular y Vitest. Pendiente prueba visual con datos de Docker y creación de profesionales por ADMIN si el catálogo está vacío.
+
 ## Reglas de revisión humana
 1. Revisar cada cambio de IA en GitHub.
 2. Validar builds y pruebas antes de fusionar.

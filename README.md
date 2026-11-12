@@ -4,14 +4,14 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 
 - **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
 - **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
-- **Estado actual:** fase 6 en curso. El acceso de usuarios (registro y login) está conectado al backend real con JWT; las vistas de especialistas, citas e historia clínica todavía muestran **datos ficticios**, y sus acciones no persisten en la API.
+- **Estado actual:** fase 6 en curso. Registro e inicio de sesión conectados al backend real con JWT; el **catálogo de médicos** se consulta en la API real (`GET /api/v1/doctors`). Las citas y la historia clínica todavía muestran **datos ficticios** y no persisten en el backend.
 
 ## Funcionalidades visuales implementadas
 
 - Panel responsivo con barra lateral y menú móvil.
 - Acceso real con correo y contraseña, registro de pacientes y roles obtenidos del JWT emitido por Spring Boot.
 - Modo demostración separado con selector de roles **Paciente / Médico / Administrador**; no concede permisos de backend.
-- Vista de especialistas con buscador y filtros por especialidad.
+- Vista de especialistas con buscador y filtros por especialidad. En sesión JWT real, muestra el catálogo del backend; sin login, el modo demostración usa médicos ficticios.
 - Flujo de reserva y cancelación local con **Angular Signals**. La operación **no envía solicitudes HTTP**.
 - Panel clínico, notas, prescripciones, consultorios y estadísticas **ilustrativos**.
 - Interfaz completamente en español; etiquetas visibles que distinguen la demostración de datos reales.
@@ -37,6 +37,8 @@ Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinad
 **Cómo probar JWT:** abre la aplicación, selecciona `Registrarse`, introduce datos ficticios y una contraseña de al menos 8 caracteres. El frontend llama a `POST /api/v1/auth/register` y luego `POST /api/v1/auth/login`; el token se mantiene en memoria hasta cerrar sesión o recargar. Un interceptor añade `Authorization: Bearer …` a solicitudes protegidas. El backend valida firma y permisos.
 
 **Conexión de desarrollo:** `angular.json` usa `proxy.conf.json` para enviar `/api` desde el contenedor Angular hacia `http://app:8081`. Requiere Docker Desktop y que los contenedores del backend estén corriendo en la red `mediconnect-pro_default`. Así el proxy accede directamente al servicio `app` de Compose por su puerto interno 8081. En el despliegue cloud se configurará un reverse proxy apropiado: esta URL es solo de desarrollo.
+
+**Catálogo real:** si la sección Especialistas está vacía después de autenticarte, comprueba `GET http://127.0.0.1:8082/api/v1/doctors`. Una base nueva no tiene médicos hasta que un ADMIN crea los registros. La API no proporciona calificaciones, horarios ni disponibilidad: la interfaz no inventa esos datos. Las reservas reales siguen pendientes de integrar.
 
 **Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. El panel muestra únicamente **contenido de demostración** aunque el usuario haya iniciado sesión realmente. Roles en UI son solo presentacionales; la seguridad depende de Spring Security.
 
@@ -68,7 +70,7 @@ src/tailwind.css       Tailwind CSS 4
 src/styles.scss        Tipografía y estilos base
 src/app/app.spec.ts    Pruebas con Vitest
 src/app/auth/         Formulario real de registro / login
-src/app/core/         Servicio de JWT e interceptor HTTP
+src/app/core/         JWT, interceptor HTTP y cliente tipado de catálogos
 proxy.conf.json       Proxy local de Angular Docker a Spring Boot
 ```
 
@@ -76,7 +78,7 @@ Los paneles de ejemplo concentran varios flujos en el componente raíz para vali
 
 ### Fases pendientes
 
-- **6 (en curso):** registro/login real con JWT realizado. Pendiente: perfiles, especialistas, reservas y agendas reales con autorización por rol.
+- **6 (en curso):** registro/login real con JWT y catálogo de médicos real integrados. Pendiente: verificar manualmente el catálogo y conectar oficinas, reservas, historial y agendas con autorización por rol.
 - **7:** SSE/WebSockets y actualizaciones en tiempo real.
 - **8:** imágenes optimizadas, almacenamiento privado y sincronización offline.
 - **9:** Vitest y Cypress, 80% de cobertura y pirámide de pruebas.
