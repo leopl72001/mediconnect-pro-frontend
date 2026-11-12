@@ -154,4 +154,29 @@ describe('Autenticación JWT', () => {
     expect(auth.accessToken()).toBeNull();
   });
 
+
+  it('rechaza JWT con payload que no es JSON', () => {
+    let message = '';
+    auth.login('paciente@example.test', 'demo').subscribe({ error: error => message = error.message });
+    httpMock.expectOne('/api/v1/auth/login').flush({
+      accessToken: 'header.' + btoa('not-json') + '.signature',
+      tokenType: 'Bearer'
+    });
+    expect(message).toContain('sesión no válida');
+    expect(auth.authenticated()).toBe(false);
+  });
+
+  it('no adjunta un token al HTTP después de cerrar sesión', () => {
+    auth.login('paciente@example.test', 'demo').subscribe();
+    httpMock.expectOne('/api/v1/auth/login').flush({
+      accessToken: fakeToken('ROLE_PATIENT'), tokenType: 'Bearer'
+    });
+    auth.logout();
+    const http = TestBed.inject(HttpClient);
+    http.get('/api/v1/specialties').subscribe();
+    const request = httpMock.expectOne('/api/v1/specialties');
+    expect(request.request.headers.has('Authorization')).toBe(false);
+    request.flush([]);
+  });
+
 });
