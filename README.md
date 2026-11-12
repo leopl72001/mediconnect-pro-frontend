@@ -4,7 +4,7 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 
 - **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
 - **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
-- **Estado actual:** fase 6 en curso. Registro e inicio de sesión JWT, catálogo de médicos y consultorios reales, **reserva de citas en PostgreSQL**, listado y cancelación conectados a Spring Boot. El historial clínico y las estadísticas siguen siendo ilustrativos. La prueba manual de reserva desde Angular está pendiente.
+- **Estado actual:** fase 6 en curso. Registro e inicio de sesión JWT, catálogo de médicos y consultorios reales, **reserva de citas en PostgreSQL**, listado y cancelación conectados a Spring Boot. También incluye perfil de paciente, notas clínicas MongoDB, recetas con OpenFDA y administración de médicos/consultorios desde Angular. **La reserva y cancelación ya se comprobaron manualmente**; el nuevo circuito clínico y administrativo necesita prueba manual. Estadísticas avanzadas y modo demostración siguen siendo ilustrativos.
 
 ## Funcionalidades visuales implementadas
 
@@ -15,7 +15,10 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 - En sesión JWT de paciente: seleccionar médico, consultorio activo y horario de Colombia; crear la cita en PostgreSQL (`POST /api/v1/appointments`), listar (`GET /api/v1/appointments/me`) y cancelar (`PATCH /api/v1/appointments/{id}/cancel`).
 - En sesión JWT de médico: consultar su agenda con `GET /api/v1/appointments/doctor/me`.
 - En modo demostración: reserva y cancelación local con **Angular Signals**, sin ninguna solicitud HTTP.
-- Panel clínico, notas, prescripciones, consultorios y estadísticas **ilustrativos**.
+- Perfil real del paciente: `GET/PUT /api/v1/patients/me` con datos persistidos en PostgreSQL.
+- Médico: guardar notas clínicas en MongoDB mediante `POST /api/v1/appointments/{id}/clinical-notes` y recetas con validación OpenFDA mediante `POST /api/v1/appointments/{id}/prescriptions` sobre sus propias citas.
+- Paciente: consultar sus notas y recetas en `GET /api/v1/clinical-notes/me` y `GET /api/v1/prescriptions/me`.
+- Administrador: registrar médicos y consultorios reales; ver contadores de catálogos. La API no proporciona métricas de negocio avanzadas ni datos de identidad del paciente en la agenda del médico.
 - Interfaz completamente en español; etiquetas visibles que distinguen la demostración de datos reales.
 
 ## Requisitos
@@ -42,7 +45,7 @@ Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinad
 
 **Catálogo y reservas reales:** en Especialistas los médicos provienen de `GET /api/v1/doctors`. La base recién creada puede no tener médicos ni consultorios; un ADMIN debe registrarlos usando `/api/v1/admin/doctors` y `/api/v1/admin/offices`. En la reserva, se selecciona un consultorio activo, día y hora **en zona horaria Colombia UTC-5**; la interfaz envía timestamps ISO UTC a Spring Boot. **El sistema no expone disponibilidad anticipada**: la hora seleccionada es una solicitud, no una garantía, y el backend rechaza citas solapadas con HTTP 409. Cancelaciones requieren más de 24 h de anticipación. En pruebas usa fechas futuras y datos ficticios.
 
-**Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. Roles en la UI son solo presentacionales; la seguridad depende de Spring Security. Los datos de **especialistas, consultorios, citas y agenda** son reales cuando hay sesión JWT. **Historia clínica, recetas, estadísticas y el modo demo** siguen siendo visualizaciones ficticias.
+**Seguridad y alcance:** no se guardan tokens en `localStorage` ni se registran credenciales en consola; al recargar hay que volver a autenticarse. Roles en la UI son solo presentacionales; la seguridad depende de Spring Security. Los datos de **especialistas, consultorios, citas, agenda, perfil y clínica** son reales cuando hay sesión JWT. **Historias y recetas** son reales en sesión JWT; el **modo demo y las estadísticas avanzadas** siguen siendo visualizaciones ficticias. No se deben usar datos médicos personales para pruebas.
 
 Si usas Node.js directamente en un sistema compatible:
 
@@ -72,15 +75,17 @@ src/tailwind.css       Tailwind CSS 4
 src/styles.scss        Tipografía y estilos base
 src/app/app.spec.ts    Pruebas con Vitest
 src/app/auth/         Formulario real de registro / login
-src/app/core/         JWT, interceptor, catálogos y servicios de citas
+src/app/core/         JWT, interceptor, catálogos, citas, clínica, paciente y admin
+src/app/features/      Páginas reales de perfil, clínica y administración
 proxy.conf.json       Proxy local de Angular Docker a Spring Boot
+docs/prueba-integral-fase6.md  Recorrido completo de pruebas con los tres roles
 ```
 
-Los paneles de ejemplo concentran varios flujos en el componente raíz para validarlos visualmente. El registro/login usa un componente independiente y servicios HTTP tipados. Pendiente: extraer componentes por dominio, agregar guards de rutas y mejorar los flujos administrativos y clínicos reales.
+Los paneles de ejemplo concentran varios flujos en el componente raíz para validarlos visualmente. El registro/login usa un componente independiente y servicios HTTP tipados. Los módulos de perfil, clínica y administración están separados en componentes. Pendiente: completar guards de rutas y extraer el dashboard general en más componentes; mejorar la respuesta al vencimiento del JWT.
 
 ### Fases pendientes
 
-- **6 (en curso):** JWT, médicos y consultorios, reserva/listado/cancelación y agenda del médico programados con pruebas de compilación. Pendiente verificación manual completa y conexión de vistas administrativas y clínicas reales.
+- **6 (en curso):** JWT, médicos, consultorios, reserva/listado/cancelación, agenda, perfil, notas clínicas, recetas y formularios administrativos integrados; **faltan las pruebas manuales finales** de los tres roles. Sigue la [guía integral de pruebas](docs/prueba-integral-fase6.md).
 - **7:** SSE/WebSockets y actualizaciones en tiempo real.
 - **8:** imágenes optimizadas, almacenamiento privado y sincronización offline.
 - **9:** Vitest y Cypress, 80% de cobertura y pirámide de pruebas.
