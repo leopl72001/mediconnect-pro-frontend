@@ -137,4 +137,34 @@ describe('AdminPage — plantillas visibles y acciones de administrador', () => 
     const root = render('resumen');
     expect(root.querySelector('[role="alert"]')?.textContent).toContain('No fue posible cargar');
   });
+
+  it('envía un consultorio de demostración desde el formulario HTML real', () => {
+    fixture.componentRef.setInput('view', 'consultorios');
+    page.officeName = 'Demo Centro';
+    page.officeAddress = 'Calle ficticia';
+    page.roomNumber = '500';
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    (root.querySelector('form') as HTMLFormElement)
+      .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    expect(api.createOffice).toHaveBeenCalledOnce();
+    expect(page.success()).toContain('Consultorio registrado');
+  });
+
+  it('envía un profesional ficticio desde el formulario HTML real', () => {
+    fixture.componentRef.setInput('view', 'profesionales');
+    page.firstName = 'Ana';
+    page.lastName = 'Ficticia';
+    page.email = 'doctor@example.test';
+    page.temporaryPassword = 'Password123!';
+    page.medicalLicense = 'DEMO-2026';
+    page.specialtyId = 'specialty-1';
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    (root.querySelector('form') as HTMLFormElement)
+      .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    expect(api.createDoctor).toHaveBeenCalledOnce();
+    expect(page.success()).toContain('Médico registrado');
+  });
+
 });
