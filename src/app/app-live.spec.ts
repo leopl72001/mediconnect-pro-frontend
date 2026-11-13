@@ -257,4 +257,110 @@ describe('MediConnect real API booking and cancel flows', () => {
     expect(app.realAppointmentDate('2026-12-15T15:00:00Z')).toContain('2026');
     expect(app.dateLabel('2026-12-15')).toContain('2026');
   });
+
+  it('no intenta cargar catálogos fuera de una sesión autenticada', () => {
+    auth.authenticated.mockReturnValue(false);
+    app.loadRealDoctors();
+    app.loadOffices();
+    app.loadRealAppointments();
+    expect(catalog.doctors).not.toHaveBeenCalled();
+    expect(catalog.offices).not.toHaveBeenCalled();
+    expect(api.mine).not.toHaveBeenCalled();
+  });
+
+  it('no carga catálogos reales mientras está en modo demostración', () => {
+    app.enterDemo();
+    app.loadRealDoctors();
+    app.loadOffices();
+    app.loadRealAppointments();
+    expect(catalog.doctors).not.toHaveBeenCalled();
+    expect(catalog.offices).not.toHaveBeenCalled();
+    expect(api.mine).not.toHaveBeenCalled();
+  });
+
+  it('no revela registros cargados si la sesión caduca durante la solicitud', () => {
+    auth.authenticated.mockReturnValue(false);
+    app.loadRealDoctors();
+    app.loadOffices();
+    app.loadRealAppointments();
+    expect(app.realDoctors()).toEqual([]);
+    expect(app.realOffices()).toEqual([]);
+    expect(app.realAppointments()).toEqual([]);
+  });
+
+  it('restablece consultorio activo si el anterior quedó deshabilitado', () => {
+    app.bookingOfficeId.set('inactivo');
+    catalog.offices.mockReturnValue(of([
+      { ...office, id: 'inactivo', active: false },
+      { ...office, id: 'habilitado', active: true }
+    ]));
+    app.loadOffices();
+    expect(app.bookingOfficeId()).toBe('habilitado');
+    expect(app.realOffices().map(o => o.id)).toEqual(['habilitado']);
+  });
+
+  it('mantiene selección de consultorio mientras sigue activo', () => {
+    app.bookingOfficeId.set('office1');
+    catalog.offices.mockReturnValue(of([
+      { ...office, id: 'otro', active: true }, office
+    ]));
+    app.loadOffices();
+    expect(app.bookingOfficeId()).toBe('office1');
+  });
+
+  it('limpia selección cuando todos los consultorios están inactivos', () => {
+    app.bookingOfficeId.set('office1');
+    catalog.offices.mockReturnValue(of([{ ...office, active: false }]));
+    app.loadOffices();
+    expect(app.realOffices()).toEqual([]);
+    expect(app.bookingOfficeId()).toBe('');
+  });
+
+  it('si falta el médico al abrir reserva utiliza el primero disponible', () => {
+    app.realDoctors.set([doctor]);
+    app.realOffices.set([office]);
+    app.openBooking('no-existe');
+    expect(app.bookingDoctorId()).toBe(doctor.id);
+    expect(app.section()).toBe('reservar');
+  });
+
+  it('rechaza reserva real cuando no existe médico disponible', () => {
+    app.realDoctors.set([]);
+    app.realOffices.set([office]);
+    app.openBooking('no-existe');
+    expect(app.section()).toBe('medicos');
+    expect(app.notice()).toContain('No hay médicos');
+  });
+
+  it('no cancela una cita cuando ya quedó cancelada', () => {
+    app.cancelRealAppointment({ ...appointment, status: 'CANCELLED' });
+    expect(api.cancel).not.toHaveBeenCalled();
+  });
+
+  it('no permite cancelar durante el último día previo a la atención', () => {
+    app.cancelRealAppointment({
+      ...appointment, startTime: new Date(Date.now() + 24 * 3600000).toISOString()
+    });
+    expect(api.cancel).not.toHaveBeenCalled();
+    expect(app.notice()).toContain('24 horas');
+  });
+
+  it('solo cuenta reservas futuras activas y no muestra canceladas', () => {
+    app.realAppointments.set([
+      appointment,
+      { ...appointment, id: 'older', startTime: past },
+      { ...appointment, id: 'cancelled', status: 'CANCELLED' }
+    ]);
+    expect(app.realUpcomingAppointments().map(a => a.id)).toEqual([appointment.id]);
+  });
+
+  it('distingue fecha y título de agenda para el médico real', () => {
+    app.role.set('medico');
+    app.goTo('agenda');
+    expect(app.getPageTitle()).toBe('Mi agenda');
+    expect(app.clinicalRole()).toBe('medico');
+    app.goTo('historia');
+    expect(app.getPageTitle()).toBe('Notas clínicas');
+  });
+
 });
