@@ -179,4 +179,11 @@ describe('MediConnect Pro — botones y formularios de interfaz demo', () => {
     button('Nueva cita').click();
     expect(app.section()).toBe('reservar');
   });
+
+  it('el médico abre la agenda usando el enlace de próximos pacientes', () => {
+    app.setRole('medico');
+    button('Ver agenda').click();
+    expect(app.section()).toBe('agenda');
+  });
+
 });
