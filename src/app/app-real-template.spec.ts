@@ -11,8 +11,8 @@ import { AppointmentNotifications } from './core/appointment-notifications';
 import { AdminApiService } from './core/admin-api.service';
 
 describe('App — plantillas de sesión JWT ficticia y navegación por rol', () => {
-  const principal = signal({
-    email: 'patient@example.test', role: 'ROLE_PATIENT' as const
+  const principal = signal<{ email: string; role: 'ROLE_PATIENT' | 'ROLE_DOCTOR' | 'ROLE_ADMIN' }>({
+    email: 'patient@example.test', role: 'ROLE_PATIENT'
   });
   const doctor = {
     id: 'doctor-1', firstName: 'Ana', lastName: 'Ejemplo',
@@ -95,21 +95,24 @@ describe('App — plantillas de sesión JWT ficticia y navegación por rol', () 
   });
 
   it('cambia a vista médica de agenda con registros asignados', () => {
-    app.role.set('medico');
+    principal.set({ email: 'doctor@example.test', role: 'ROLE_DOCTOR' });
+    fixture.detectChanges();
     const root = render('agenda');
     expect(root.textContent).toContain('Mi agenda');
     expect(root.textContent).toContain('Ana Ejemplo');
   });
 
   it('la pantalla médica de pacientes evita divulgar sus nombres', () => {
-    app.role.set('medico');
+    principal.set({ email: 'doctor@example.test', role: 'ROLE_DOCTOR' });
+    fixture.detectChanges();
     const root = render('pacientes');
     expect(root.textContent).toContain('Citas de pacientes asignadas');
     expect(root.textContent).toContain('privacidad');
   });
 
   it('presenta el tablero administrativo real sin estadísticas ficticias', () => {
-    app.role.set('admin');
+    principal.set({ email: 'admin@example.test', role: 'ROLE_ADMIN' });
+    fixture.detectChanges();
     const root = render('resumen');
     expect(root.textContent).toContain('Panel administrativo');
     expect(root.textContent).toContain('Médicos registrados');
@@ -117,13 +120,15 @@ describe('App — plantillas de sesión JWT ficticia y navegación por rol', () 
   });
 
   it('la administración real permite visualizar profesionales y consultorios', () => {
-    app.role.set('admin');
+    principal.set({ email: 'admin@example.test', role: 'ROLE_ADMIN' });
+    fixture.detectChanges();
     expect(render('profesionales').textContent).toContain('Registrar nuevo médico');
     expect(render('consultorios').textContent).toContain('Crear consultorio real');
   });
 
   it('el tablero administrativo informa límites de estadísticas reales', () => {
-    app.role.set('admin');
+    principal.set({ email: 'admin@example.test', role: 'ROLE_ADMIN' });
+    fixture.detectChanges();
     const root = render('reportes');
     expect(root.textContent).toContain('no se inventan cifras');
   });
