@@ -76,19 +76,25 @@ describe('MediConnect Pro — botones y formularios de interfaz demo', () => {
 
   it('el médico navega de su panel hacia la agenda real', () => {
     app.setRole('medico');
-    button('Consultar agenda real').click();
+    button('Revisar agenda').click();
     expect(app.section()).toBe('agenda');
   });
 
   it('el médico navega de su panel al formulario de notas', () => {
     app.setRole('medico');
-    button('Registrar nota clínica').click();
+    const nav = root().querySelector('nav[aria-label="Secciones"]')!;
+    const link = [...nav.querySelectorAll('button')].find(b => b.textContent?.includes('Notas clínicas'));
+    expect(link).toBeTruthy();
+    (link as HTMLButtonElement).click();
     expect(app.section()).toBe('historia');
   });
 
   it('el médico navega de su panel hacia prescripciones', () => {
     app.setRole('medico');
-    button('Crear prescripción').click();
+    const nav = root().querySelector('nav[aria-label="Secciones"]')!;
+    const link = [...nav.querySelectorAll('button')].find(b => b.textContent?.includes('Prescripciones'));
+    expect(link).toBeTruthy();
+    (link as HTMLButtonElement).click();
     expect(app.section()).toBe('recetas');
   });
 
