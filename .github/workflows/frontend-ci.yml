@@ -26,7 +26,7 @@ jobs:
       - name: Pruebas Vitest con cobertura real
         run: npm test -- --watch=false --coverage
       - name: Mostrar porcentajes reales de Vitest
-        run: node scripts/report-coverage.cjs
+        run: node scripts/report-coverage.cjs --minimum=80
       - name: Construir Docker multi-stage de producción
         run: docker build -t mediconnect-pro-ui:test .
       - name: Publicar cobertura para el jurado
