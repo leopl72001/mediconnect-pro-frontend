@@ -4,7 +4,7 @@ Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, c
 
 - **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
 - **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
-- **Estado actual:** fase 6 de integración real completada y validada visualmente para pacientes, médicos y administración. **Fase 7 validada:** notificaciones SSE con JWT, con actualización automática de agenda comprobada visualmente. **Fase 8 validada en Docker local:** imágenes WebP, archivos privados en MongoDB y cola offline. Se comprobó sincronización 1 pendiente → 0 al recuperar conexión; la separación entre pacientes pasó Cypress. La fase 9 sigue incompleta respecto a la meta de cobertura 80 %. Estadísticas avanzadas y modo demostración siguen siendo ilustrativos.
+- **Estado actual:** fase 6 de integración real completada y validada visualmente para pacientes, médicos y administración. **Fase 7 validada:** notificaciones SSE con JWT, con actualización automática de agenda comprobada visualmente. **Fase 8 validada en Docker local:** imágenes WebP, archivos privados en MongoDB y cola offline. Se comprobó sincronización 1 pendiente → 0 al recuperar conexión; la separación entre pacientes pasó Cypress. La fase 9 cumple la meta de cobertura de 80 % en backend y frontend; el despliegue público y SonarCloud real siguen pendientes. Estadísticas avanzadas y modo demostración siguen siendo ilustrativos.
 
 ## Funcionalidades visuales implementadas
 
@@ -58,13 +58,13 @@ npm start
 
 ## Calidad, CI/CD y defensa (Capstone)
 
-- **Vitest cobertura:** `npm test -- --watch=false --coverage`; ver `coverage/index.html`, y `node scripts/report-coverage.cjs` para leer porcentajes. Última medición real: **32,64 % líneas / 30,45 % ramas** con **49/49 pruebas** en la ejecución integrada del PR #13. Faltan pruebas hasta el 80 %.
+- **Vitest cobertura:** `npm test -- --watch=false --coverage`; ver `coverage/index.html`, y `node scripts/report-coverage.cjs` para leer porcentajes. Última medición real, GitHub Actions PR #28 (13/11/2026): **95,78 % líneas / 87,86 % ramas / 81,20 % funciones / 92,13 % instrucciones**, con **235/235 pruebas**. La regla estricta de CI exige al menos 80 % en las cuatro métricas.
 - **Cypress:** cuatro recorridos reales, tres en `cypress/e2e/capstone-critical.cy.js` y uno en `cypress/e2e/media-privacy.cy.js` para impedir acceso entre pacientes. GitHub Actions inicia PostgreSQL/MongoDB/Redis y Angular; los cuatro recorridos estaban aprobados en el PR #13.
 - **Docker multi-stage:** `docker build -t mediconnect-pro-ui .` compila Angular 21 y sirve archivos estáticos con Nginx; el proxy mantiene JWT y SSE en el mismo origen.
 - **Cloud:** `render.yaml` prepara la interfaz; `BACKEND_ORIGIN` debe contener la URL real del backend en Render. Los secretos y activación requieren cuenta conectada y aprobación del titular. [Guía backend](https://github.com/leopl72001/mediconnect-pro-backend/blob/main/docs/DEPLOY-CLOUD.md).
 - **CD:** workflows `publish-cloud.yml` publican a GHCR y activan Render cuando se configura `RENDER_DEPLOY_HOOK_URL`. Publicar contenedor no crea URL pública.
 - **Defensa de 15 minutos:** [guion completo y fluido](docs/DEFENSA-CAPSTONE-15MIN.md). [Bitácora IA](docs/ai-log.md).
-- **Importante:** el 80 % de cobertura, SonarCloud y la URL pública **están pendientes de cumplir/verificar**, no deben presentarse como aprobados.
+- **Importante:** la cobertura 80 % está cumplida y protegida en CI. **SonarCloud y la URL pública siguen pendientes** y no deben presentarse como aprobados.
 
 ## Compilación y pruebas
 
@@ -102,7 +102,7 @@ Los paneles de ejemplo concentran varios flujos en el componente raíz para vali
 - **6 (completada):** JWT, médicos, consultorios, reservas, agenda, perfil, notas clínicas, recetas y administración comprobados mediante flujo funcional en Angular; cobertura formal queda para fase 9.
 - **7 (completada):** SSE y actualización de agenda sin recarga verificados visualmente.
 - **8 (validada localmente):** Canvas/WebP, archivos privados GridFS y sincronización diferida con IndexedDB probados con archivos ficticios. La privacidad entre cuentas se automatizó con Cypress. [Guía de prueba fase 8](docs/prueba-fase8-medios.md).
-- **9 (en desarrollo):** JaCoCo, Vitest y Testcontainers operativos; Cypress 4 flujos aprobados. Backend 51,64 % líneas; frontend 32,64 % líneas. Cobertura 80 % pendiente.
+- **9 (completada en cobertura):** JaCoCo 82,36 % líneas / 82,17 % ramas y 95/95 JUnit; Vitest 95,78 % líneas / 87,86 % ramas / 81,20 % funciones / 92,13 % instrucciones y 235/235 pruebas; Cypress integrado. Puertas de calidad ≥80 % activadas en CI. SonarCloud real aún pendiente de conexión.
 - **10 (preparada, no desplegada):** Docker multi-stage, GHCR y Render Free definidos. PostgreSQL existe; faltan MongoDB/Redis, secretos, URL pública real y dashboard SonarCloud.
 
 ### Gobernanza de IA
