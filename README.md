@@ -1,10 +1,93 @@
 # MediConnect Pro — Frontend (Angular 21+)
 
+## Entrega del proyecto de grado — MediConnect Pro
+
+**MediConnect Pro** es una aplicación académica full-stack para la gestión de citas y registros clínicos de demostración. Implementa flujos diferenciados de **paciente, médico y administrador**, con autenticación JWT y persistencia en PostgreSQL y MongoDB. **No es un sistema clínico certificado ni debe utilizarse con datos de pacientes reales.**
+
+### Enlaces de la solución
+
+| Recurso | Enlace |
+| --- | --- |
+| Aplicación web desplegada | [Abrir MediConnect Pro](https://mediconnect-pro-frontend.onrender.com) |
+| API Spring Boot | [Backend en Render](https://mediconnect-pro-backend.onrender.com) |
+| Estado de la API | [Actuator Health](https://mediconnect-pro-backend.onrender.com/actuator/health) |
+| Código fuente backend | [GitHub — Java / Spring Boot](https://github.com/leopl72001/mediconnect-pro-backend) |
+| Código fuente frontend | [GitHub — Angular](https://github.com/leopl72001/mediconnect-pro-frontend) |
+
+> **Video de sustentación (5–8 minutos):** pendiente de subir. Cuando esté publicado, añadir aquí su URL pública de YouTube o Google Drive. El formulario de entrega también requiere pegar esa URL en su campo correspondiente.
+
+### ¿Qué problema resuelve?
+
+Centraliza en una sola plataforma las funciones principales de una consulta médica de demostración: catálogo de especialistas, reserva y cancelación de citas, agenda del médico, consulta de notas clínicas y prescripciones, perfil del paciente y archivos privados de prueba. Ofrece una interfaz en español con permisos por rol.
+
+### Tecnologías y arquitectura
+
+- **Frontend:** Angular 21, TypeScript, Signals, Tailwind CSS 4, Nginx.
+- **Backend:** Java 25, Spring Boot 4, Spring Security, JWT, Maven.
+- **Datos relacionales:** PostgreSQL, con migraciones Flyway (usuarios, médicos, consultorios, especialidades, citas y prescripciones).
+- **Datos documentales y archivos:** MongoDB Atlas (notas clínicas y GridFS).
+- **Caché:** Redis; **notificaciones de agenda:** SSE.
+- **Despliegue:** dos servicios Docker independientes en Render, con Nginx como proxy inverso hacia la API Spring Boot.
+- **Calidad:** JUnit, JaCoCo, Vitest, Cypress y GitHub Actions.
+
+### Demostración funcional realizada (noviembre de 2026)
+
+Con cuentas y datos **ficticios** se comprobaron manualmente estos recorridos en la aplicación publicada:
+
+1. Registro e inicio de sesión de paciente; autenticación JWT y navegación por rol.
+2. Acceso de administrador y creación de médico y consultorio de prueba.
+3. Actualización del perfil del paciente con confirmación de guardado en PostgreSQL.
+4. Creación y consulta de cita, cancelación y actualización del estado; agenda del médico.
+5. Creación de una nota clínica por el médico y consulta de esa nota en la cuenta del paciente.
+6. Creación de una prescripción por el médico y consulta por el paciente; el resultado de OpenFDA fue `MANUAL_VALIDATION_REQUIRED`, **no una validación automática aprobada**.
+7. Subida y visualización de archivo privado de prueba en MongoDB GridFS.
+8. Indicador `SSE en vivo` durante las pruebas de sesiones autenticadas.
+
+Estas son **pruebas funcionales de demostración**; no constituyen auditoría de seguridad, certificación médica ni garantía de disponibilidad.
+
+### Pruebas automatizadas y cobertura reportada
+
+| Suite | Resultado reportado |
+| --- | --- |
+| Backend JUnit | 95/95 pruebas; JaCoCo 82,36 % líneas y 82,17 % ramas |
+| Frontend Vitest | 235/235 pruebas; 95,78 % líneas, 87,86 % ramas, 81,20 % funciones y 92,13 % instrucciones |
+| Cypress | Recorridos de autenticación, reservas y privacidad entre cuentas documentados |
+
+Los porcentajes proceden de las últimas ejecuciones documentadas en los repositorios, **no de una nueva ejecución realizada para esta actualización del README**. Las reglas de cobertura ≥80 % están configuradas en CI. **No se afirma contar con una validación real de SonarCloud**.
+
+### Cómo evaluar el sistema
+
+1. Acceder a [la aplicación web](https://mediconnect-pro-frontend.onrender.com).
+2. Crear un paciente **ficticio** mediante «Registrarse» o iniciar sesión con una cuenta de prueba existente.
+3. Explorar Especialistas, Mis citas, Mi perfil, Historia clínica, Mis recetas y Mis archivos.
+4. Para probar administración y agenda médica se necesitan cuentas de esos roles creadas de manera autorizada; **no se publican contraseñas ni tokens**.
+5. Para reproducir las pruebas automatizadas o ejecutar el sistema localmente, consultar las instrucciones técnicas más abajo en este README y el repositorio complementario.
+
+### Limitaciones y seguridad
+
+- Render Free suspende instancias por inactividad: el primer acceso puede tardar varios minutos; un despliegue `Live` no implica disponibilidad continua.
+- PostgreSQL Free del entorno de demostración tiene fecha de vencimiento anunciada para **12 de diciembre de 2026**: antes de esa fecha se debe respaldar o migrar la información.
+- Algunas comprobaciones de OpenFDA requieren revisión manual.
+- Las estadísticas avanzadas y el modo demostración pueden usar datos ilustrativos; distinguirlos de los flujos con JWT real.
+- La cola offline IndexedDB no está cifrada: utilizar exclusivamente documentos inventados y no subir datos de salud reales.
+- El entorno es **académico**; requiere controles adicionales antes de cualquier uso productivo.
+
+### Entrega y video (5–8 minutos)
+
+Para el formulario universitario:
+
+1. **Repositorio GitHub público:** colocar la URL de este repositorio como principal; el otro repositorio está enlazado en la tabla anterior.
+2. **Video público:** grabar la pantalla mostrando el problema, la arquitectura, los roles, el registro, la cita y su cancelación, la historia clínica, la receta, el archivo de prueba, los repositorios y el despliegue. Publicarlo en YouTube o Drive con permisos de acceso adecuados y pegar la URL en el campo del formulario.
+3. **Verificar antes de enviar:** abrir ambos enlaces en una ventana privada y comprobar que el video sea accesible sin solicitar permisos.
+
+---
+
+
 Interfaz del proyecto de grado **Senior Full-Stack Capstone & Cloud Defense**, construida con **Angular 21**, **Signals**, **zoneless** y **Tailwind CSS 4**.
 
 - **Backend independiente:** [mediconnect-pro-backend](https://github.com/leopl72001/mediconnect-pro-backend) (Java 25 / Spring Boot 4).
 - **Proyecto original ya entregado:** [mediconnect](https://github.com/leopl72001/mediconnect). No se modifica.
-- **Estado actual:** fase 6 de integración real completada y validada visualmente para pacientes, médicos y administración. **Fase 7 validada:** notificaciones SSE con JWT, con actualización automática de agenda comprobada visualmente. **Fase 8 validada en Docker local:** imágenes WebP, archivos privados en MongoDB y cola offline. Se comprobó sincronización 1 pendiente → 0 al recuperar conexión; la separación entre pacientes pasó Cypress. La fase 9 cumple la meta de cobertura de 80 % en backend y frontend; el despliegue público y SonarCloud real siguen pendientes. Estadísticas avanzadas y modo demostración siguen siendo ilustrativos.
+- **Estado actual:** fase 6 de integración real completada y validada visualmente para pacientes, médicos y administración. **Fase 7 validada:** notificaciones SSE con JWT, con actualización automática de agenda comprobada visualmente. **Fase 8 validada en Docker local:** imágenes WebP, archivos privados en MongoDB y cola offline. Se comprobó sincronización 1 pendiente → 0 al recuperar conexión; la separación entre pacientes pasó Cypress. La fase 9 cumple la meta de cobertura de 80 % en backend y frontend; el despliegue público ya fue realizado; SonarCloud real continúa pendiente. Estadísticas avanzadas y modo demostración siguen siendo ilustrativos.
 
 ## Funcionalidades visuales implementadas
 
@@ -43,7 +126,7 @@ Abre http://localhost:4200 dentro o fuera de VS Code. El servidor está destinad
 
 **Cómo probar JWT:** abre la aplicación, selecciona `Registrarse`, introduce datos ficticios y una contraseña de al menos 8 caracteres. El frontend llama a `POST /api/v1/auth/register` y luego `POST /api/v1/auth/login`; el token se mantiene en memoria hasta cerrar sesión o recargar. Un interceptor añade `Authorization: Bearer …` a solicitudes protegidas. El backend valida firma y permisos.
 
-**Conexión de desarrollo:** `angular.json` usa `proxy.conf.json` para enviar `/api` desde el contenedor Angular hacia `http://app:8081`. Requiere Docker Desktop y que los contenedores del backend estén corriendo en la red `mediconnect-pro_default`. Así el proxy accede directamente al servicio `app` de Compose por su puerto interno 8081. En el despliegue cloud se configurará un reverse proxy apropiado: esta URL es solo de desarrollo.
+**Conexión de desarrollo:** `angular.json` usa `proxy.conf.json` para enviar `/api` desde el contenedor Angular hacia `http://app:8081`. Requiere Docker Desktop y que los contenedores del backend estén corriendo en la red `mediconnect-pro_default`. Así el proxy accede directamente al servicio `app` de Compose por su puerto interno 8081. En Render se utiliza Nginx como proxy inverso del mismo origen; esta URL `http://app:8081` es solo para desarrollo local.
 
 **Catálogo y reservas reales:** en Especialistas los médicos provienen de `GET /api/v1/doctors`. La base recién creada puede no tener médicos ni consultorios; un ADMIN debe registrarlos usando `/api/v1/admin/doctors` y `/api/v1/admin/offices`. En la reserva, se selecciona un consultorio activo, día y hora **en zona horaria Colombia UTC-5**; la interfaz envía timestamps ISO UTC a Spring Boot. **El sistema no expone disponibilidad anticipada**: la hora seleccionada es una solicitud, no una garantía, y el backend rechaza citas solapadas con HTTP 409. Cancelaciones requieren más de 24 h de anticipación. En pruebas usa fechas futuras y datos ficticios.
 
@@ -64,7 +147,7 @@ npm start
 - **Cloud:** `render.yaml` prepara la interfaz; `BACKEND_ORIGIN` debe contener la URL real del backend en Render. Los secretos y activación requieren cuenta conectada y aprobación del titular. [Guía backend](https://github.com/leopl72001/mediconnect-pro-backend/blob/main/docs/DEPLOY-CLOUD.md).
 - **CD:** workflows `publish-cloud.yml` publican a GHCR y activan Render cuando se configura `RENDER_DEPLOY_HOOK_URL`. Publicar contenedor no crea URL pública.
 - **Defensa de 15 minutos:** [guion completo y fluido](docs/DEFENSA-CAPSTONE-15MIN.md). [Bitácora IA](docs/ai-log.md).
-- **Importante:** la cobertura 80 % está cumplida y protegida en CI. **SonarCloud y la URL pública siguen pendientes** y no deben presentarse como aprobados.
+- **Importante:** la cobertura 80 % está cumplida y protegida en CI. **SonarCloud sigue pendiente; la URL pública ya está disponible** y no deben presentarse como aprobados.
 
 ## Compilación y pruebas
 
